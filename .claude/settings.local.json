@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --turbopack --use-npm)",
+      "Read(//Users/dylanyoung/**)",
+      "Bash(npx create-next-app@latest ticketscout-init --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --turbopack --use-npm)",
+      "Bash(rm -rf ticketscout-init)",
+      "Bash(npx create-next-app@latest ticketscout-init --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --turbopack --use-npm --no-experimental-app 2)",
+      "Bash(1:*)",
+      "Bash(cp -r ticketscout-init/. ticketscout/)",
+      "Bash(npm install:*)",
+      "Bash(npx shadcn@latest init -d --force 2)"
+    ]
+  }
+}
