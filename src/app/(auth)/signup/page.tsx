@@ -56,6 +56,21 @@ export default function SignupPage() {
         setError("Account created but sign-in failed. Please sign in manually.");
         setLoading(false);
       } else {
+        // Redirect to Stripe checkout for 7-day free trial with card
+        try {
+          const checkoutRes = await fetch("/api/stripe/checkout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ trial: true }),
+          });
+          const checkoutData = await checkoutRes.json();
+          if (checkoutData.url) {
+            window.location.href = checkoutData.url;
+            return;
+          }
+        } catch {
+          // If checkout fails, still go to dashboard
+        }
         router.push("/dashboard");
       }
     } catch {

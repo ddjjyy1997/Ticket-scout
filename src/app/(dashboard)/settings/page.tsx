@@ -155,7 +155,7 @@ export default async function SettingsPage() {
 
           {plan !== "pro" && (
             <p className="mt-4 text-center text-xs text-muted-foreground">
-              Start with a 14-day free trial. No credit card required.
+              Start with a 7-day free trial. Card required, cancel anytime.
             </p>
           )}
         </CardContent>

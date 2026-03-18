@@ -62,7 +62,7 @@ const STEPS = [
   {
     step: "01",
     title: "Create Your Account",
-    description: "Sign up in 30 seconds. Start with a free plan or try Pro for 14 days.",
+    description: "Sign up in 30 seconds. Try Pro free for 7 days — cancel anytime.",
   },
   {
     step: "02",
@@ -140,7 +140,7 @@ export function LandingPage() {
               </Link>
             </div>
             <p className="mt-4 text-xs text-muted-foreground">
-              No credit card required. 14-day free Pro trial.
+              7-day free Pro trial. Cancel anytime.
             </p>
           </div>
 

@@ -66,7 +66,7 @@ export function PricingTable() {
           Everything you need to scout tickets
         </p>
         <div className="mt-6">
-          <span className="text-4xl font-bold">$5</span>
+          <span className="text-4xl font-bold">$4.99</span>
           <span className="text-muted-foreground">/month</span>
         </div>
         <p className="mt-1 text-xs text-muted-foreground">
@@ -76,7 +76,7 @@ export function PricingTable() {
           href="/signup"
           className="mt-6 flex h-11 items-center justify-center rounded-lg bg-primary text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
         >
-          Start 14-Day Free Trial
+          Start 7-Day Free Trial
         </Link>
         <ul className="mt-8 space-y-3">
           {features.map((f) => (

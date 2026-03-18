@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { users, subscriptions } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import Stripe from "stripe";
+import { STRIPE_CONFIG } from "@/lib/plans";
 
 export async function POST(request: Request) {
   try {
@@ -49,7 +50,7 @@ export async function POST(request: Request) {
       })
       .returning({ id: users.id, email: users.email });
 
-    // Create Stripe customer + trial subscription
+    // Create Stripe customer + subscription record (trialing, no payment yet)
     try {
       let stripeCustomerId = `local_${newUser.id}`;
       if (process.env.STRIPE_SECRET_KEY) {
@@ -67,11 +68,12 @@ export async function POST(request: Request) {
         stripeCustomerId,
         plan: "pro",
         status: "trialing",
-        trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+        trialEndsAt: new Date(
+          Date.now() + STRIPE_CONFIG.trialDays * 24 * 60 * 60 * 1000
+        ),
       });
     } catch (subErr) {
       console.error("Subscription creation error:", subErr);
-      // User was still created — they just won't have a trial row
     }
 
     return NextResponse.json(

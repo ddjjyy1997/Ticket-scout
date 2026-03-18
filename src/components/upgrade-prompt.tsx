@@ -30,7 +30,7 @@ export function UpgradePrompt({ feature, compact }: UpgradePromptProps) {
       </div>
       <h3 className="mb-1 text-sm font-semibold">Pro Feature</h3>
       <p className="mb-4 max-w-xs text-xs text-muted-foreground">
-        Upgrade to TicketScout Pro to access {feature}. Start with a 14-day free trial.
+        Upgrade to TicketScout Pro to access {feature}. Try free for 7 days.
       </p>
       <Link
         href="/settings"

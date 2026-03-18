@@ -23,10 +23,10 @@ export type Feature = keyof (typeof PLANS)["free"];
 export const STRIPE_CONFIG = {
   proMonthlyPriceId: process.env.STRIPE_PRO_MONTHLY_PRICE_ID ?? "",
   proYearlyPriceId: process.env.STRIPE_PRO_YEARLY_PRICE_ID ?? "",
-  trialDays: 14,
+  trialDays: 7,
 } as const;
 
 export const PRO_PRICE = {
-  monthly: 5,
+  monthly: 4.99,
   yearly: 49,
 } as const;

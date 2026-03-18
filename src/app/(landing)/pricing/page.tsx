@@ -21,7 +21,7 @@ export default function PricingPage() {
             {[
               {
                 q: "Can I try Pro for free?",
-                a: "Yes! Every new account gets a 14-day free trial of Pro. No credit card required.",
+                a: "Yes! Every new account gets a 7-day free trial of Pro. Add a payment method to start — you won't be charged until your trial ends.",
               },
               {
                 q: "What happens when my trial ends?",
