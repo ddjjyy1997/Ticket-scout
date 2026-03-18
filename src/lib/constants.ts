@@ -155,6 +155,16 @@ export const SCAN_FILTER = {
     /dry\s+run/i,
     /staff\s+opening/i,
     /welcome\s+dome/i,
+    /deposit/i,
+    /license\s+event/i,
+    /club\s+fee/i,
+    /non.?renewal/i,
+    /school\s+day/i,
+    /upgrade\s+license/i,
+    /flex\s+pack/i,
+    /partial\s+pack/i,
+    /season\s+ticket\s+deposit/i,
+    /group\s+deposit/i,
   ],
 } as const;
 
