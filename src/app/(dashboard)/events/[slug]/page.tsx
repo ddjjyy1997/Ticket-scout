@@ -455,6 +455,8 @@ export default async function EventDetailPage({
         genre={event.genre}
         venueId={event.venueId}
         artistIds={event.artists?.map((ea) => ea.artist.id) ?? []}
+        artistName={event.artists?.find((ea) => ea.isPrimary)?.artist.name ?? event.artists?.[0]?.artist.name}
+        segment={event.segment}
       />
     </div>
   );
