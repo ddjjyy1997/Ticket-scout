@@ -252,6 +252,11 @@ export default async function EventDetailPage({
                       new Date(a.startDate).getTime() -
                       new Date(b.startDate).getTime()
                   )
+                  .filter((w) => {
+                    // Hide past presales entirely — only show active, upcoming, or general onsale
+                    const endOrFar = w.endDate ?? new Date("2099-01-01");
+                    return isFuture(w.startDate) || isFuture(endOrFar);
+                  })
                   .map((w) => {
                     const isActive =
                       isFuture(w.endDate ?? new Date("2099-01-01")) &&

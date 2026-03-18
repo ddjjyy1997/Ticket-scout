@@ -56,6 +56,17 @@ type GroupedItem =
   | { type: "music-group"; key: string; events: EventRow[] }
   | { type: "sports-group"; key: string; events: EventRow[]; venueName: string };
 
+function extractTeamName(eventName: string): string {
+  // "Toronto Raptors vs Orlando Magic" → "Toronto Raptors"
+  // "Toronto Maple Leafs v Carolina Hurricanes" → "Toronto Maple Leafs"
+  const vsMatch = eventName.match(/^(.+?)\s+v(?:s\.?|\.)\s+/i);
+  if (vsMatch) return vsMatch[1].trim();
+  // "ST. PATS GAME | Toronto Maple Leafs v ..." → "Toronto Maple Leafs"
+  const pipeMatch = eventName.match(/\|\s*(.+?)\s+v(?:s\.?|\.)\s+/i);
+  if (pipeMatch) return pipeMatch[1].trim();
+  return eventName;
+}
+
 function groupEvents(events: EventRow[]): GroupedItem[] {
   const groups = new Map<string, EventRow[]>();
   const order: string[] = [];
@@ -64,12 +75,19 @@ function groupEvents(events: EventRow[]): GroupedItem[] {
     const primaryArtist = evt.artists?.find((a: { isPrimary: boolean | null }) => a.isPrimary);
     const isSports = evt.segment === "Sports";
 
-    // Sports: group by venue. Music: group by primary artist + venue.
-    const key = isSports
-      ? `sports-${evt.venueId ?? "none"}`
-      : primaryArtist
-      ? `music-${primaryArtist.artist.slug}-${evt.venueId ?? "none"}`
-      : `single-${evt.id}`;
+    let key: string;
+    if (isSports) {
+      // Sports: group by team (primary artist or extracted team name)
+      const teamKey = primaryArtist
+        ? primaryArtist.artist.slug
+        : extractTeamName(evt.name).toLowerCase().replace(/\s+/g, "-");
+      key = `sports-${teamKey}`;
+    } else if (primaryArtist) {
+      // Music: group by primary artist + venue
+      key = `music-${primaryArtist.artist.slug}-${evt.venueId ?? "none"}`;
+    } else {
+      key = `single-${evt.id}`;
+    }
 
     if (!groups.has(key)) {
       groups.set(key, []);
@@ -219,9 +237,8 @@ function extractOpponent(eventName: string): string | null {
 
 function SportsGroupCard({ events, venueName }: { events: EventRow[]; venueName: string }) {
   const first = events[0];
-  // Try to extract team name from event name (e.g., "Toronto Blue Jays vs. ...")
-  const teamMatch = first.name.match(/^(.+?)\s+vs\.?/i);
-  const teamName = teamMatch?.[1] ?? first.name;
+  const primaryArtist = first.artists?.find((a: { isPrimary: boolean | null }) => a.isPrimary);
+  const teamName = primaryArtist?.artist?.name ?? extractTeamName(first.name);
 
   return (
     <Link href={`/events/${first.slug}`}>
