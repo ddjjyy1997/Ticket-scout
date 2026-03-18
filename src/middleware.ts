@@ -47,8 +47,20 @@ export default auth((req) => {
   return NextResponse.next();
 });
 
+// Only run middleware on page routes and API routes — NOT on static files
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon\\.ico|logo\\.png|.*\\.svg|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.gif|.*\\.webp|.*\\.ico).*)",
+    "/dashboard/:path*",
+    "/events/:path*",
+    "/presales/:path*",
+    "/calendar/:path*",
+    "/watchlist/:path*",
+    "/notifications/:path*",
+    "/settings/:path*",
+    "/admin/:path*",
+    "/tickets/:path*",
+    "/api/:path*",
+    "/login",
+    "/signup",
   ],
 };
