@@ -28,5 +28,5 @@ export const STRIPE_CONFIG = {
 
 export const PRO_PRICE = {
   monthly: 4.99,
-  yearly: 49,
+  yearly: 49.99,
 } as const;

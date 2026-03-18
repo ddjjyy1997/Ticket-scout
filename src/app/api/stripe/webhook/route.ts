@@ -28,7 +28,9 @@ export async function POST(request: Request) {
   try {
     switch (event.type) {
       case "customer.subscription.created":
-      case "customer.subscription.updated": {
+      case "customer.subscription.updated":
+      case "customer.subscription.resumed":
+      case "customer.subscription.paused": {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const sub = event.data.object as any;
         const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
@@ -38,6 +40,7 @@ export async function POST(request: Request) {
           case "trialing": status = "trialing"; break;
           case "active": status = "active"; break;
           case "past_due": status = "past_due"; break;
+          case "paused": status = "paused"; break;
           case "canceled":
           case "unpaid": status = "cancelled"; break;
           default: status = sub.status;
@@ -74,6 +77,29 @@ export async function POST(request: Request) {
             updatedAt: new Date(),
           })
           .where(eq(subscriptions.stripeCustomerId, customerId));
+        break;
+      }
+
+      case "customer.subscription.trial_will_end": {
+        // Trial ending in 3 days — could send a reminder email here
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const sub = event.data.object as any;
+        const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
+        console.log(`[webhook] Trial ending soon for customer ${customerId}`);
+        break;
+      }
+
+      case "invoice.payment_succeeded":
+      case "invoice.paid": {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const invoice = event.data.object as any;
+        const customerId = typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id;
+        if (customerId) {
+          await db
+            .update(subscriptions)
+            .set({ status: "active", plan: "pro", updatedAt: new Date() })
+            .where(eq(subscriptions.stripeCustomerId, customerId));
+        }
         break;
       }
 

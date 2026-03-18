@@ -70,7 +70,7 @@ export function PricingTable() {
           <span className="text-muted-foreground">/month</span>
         </div>
         <p className="mt-1 text-xs text-muted-foreground">
-          or $49/year (save 18%)
+          or $49.99/year (save 17%)
         </p>
         <Link
           href="/signup"
