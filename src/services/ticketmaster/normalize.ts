@@ -38,6 +38,30 @@ export interface NormalizedOnsaleWindow {
   signupUrl: string | null;
 }
 
+// Infer segment/genre from event name when TM classification is missing
+const SPORTS_PATTERNS: { pattern: RegExp; genre: string }[] = [
+  { pattern: /raptors|nba|basketball/i, genre: "Basketball" },
+  { pattern: /maple leafs|marlies|nhl|hockey/i, genre: "Hockey" },
+  { pattern: /blue jays|mlb|baseball/i, genre: "Baseball" },
+  { pattern: /argonauts|cfl|football/i, genre: "Football" },
+  { pattern: /toronto fc|tfc|mls|soccer/i, genre: "Soccer" },
+  { pattern: /\bvs\.?\s/i, genre: "Sports" }, // generic "vs" pattern
+];
+
+function inferSegment(name: string): string | null {
+  for (const { pattern } of SPORTS_PATTERNS) {
+    if (pattern.test(name)) return "Sports";
+  }
+  return null;
+}
+
+function inferGenre(name: string): string | null {
+  for (const { pattern, genre } of SPORTS_PATTERNS) {
+    if (pattern.test(name)) return genre;
+  }
+  return null;
+}
+
 function slugify(text: string): string {
   return text
     .toLowerCase()
@@ -145,9 +169,9 @@ export function normalizeEvent(tmEvent: TMEvent): NormalizedEvent | null {
     eventEndDate: tmEvent.dates.end?.dateTime
       ? new Date(tmEvent.dates.end.dateTime)
       : null,
-    genre: tmEvent.classifications?.[0]?.genre?.name ?? null,
+    genre: tmEvent.classifications?.[0]?.genre?.name ?? inferGenre(tmEvent.name),
     subGenre: tmEvent.classifications?.[0]?.subGenre?.name ?? null,
-    segment: tmEvent.classifications?.[0]?.segment?.name ?? null,
+    segment: tmEvent.classifications?.[0]?.segment?.name ?? inferSegment(tmEvent.name),
     imageUrl: pickBestImage(tmEvent.images),
     status: mapStatus(tmEvent.dates.status.code),
     priceMin: tmEvent.priceRanges?.[0]?.min?.toString() ?? null,
