@@ -29,6 +29,7 @@ import { PresaleCodesSection } from "./presale-codes";
 import { auth } from "@/lib/auth";
 import { getSignupInfo } from "@/lib/presale-signup";
 import { SignupUrlEditor } from "./signup-url-editor";
+import { BackButton } from "@/components/back-button";
 import { ShareButton } from "@/components/share-button";
 import { SimilarEvents } from "./similar-events";
 
@@ -133,14 +134,8 @@ export default async function EventDetailPage({
 
   return (
     <div className="space-y-6">
-      {/* Back link */}
-      <Link
-        href="/events"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to Events
-      </Link>
+      {/* Back link — uses browser back to preserve filters */}
+      <BackButton fallback="/events" />
 
       {/* Hero section */}
       <div className="flex flex-col gap-6 lg:flex-row">
