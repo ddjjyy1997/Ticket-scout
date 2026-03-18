@@ -18,7 +18,12 @@ import {
   MapPin,
   Trash2,
   Loader2,
+  Bell,
+  BellOff,
+  Filter,
+  ArrowRight,
 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 interface WatchlistItem {
@@ -35,15 +40,32 @@ interface SearchResult {
   venues: { id: number; name: string; city: string | null; capacity: number | null }[];
 }
 
-export function WatchlistClient({ initialItems }: { initialItems: WatchlistItem[] }) {
+interface SavedViewItem {
+  id: number;
+  name: string;
+  filters: Record<string, unknown>;
+  notifyEnabled: boolean;
+  createdAt: string;
+}
+
+export function WatchlistClient({
+  initialItems,
+  initialViews = [],
+}: {
+  initialItems: WatchlistItem[];
+  initialViews?: SavedViewItem[];
+}) {
   const router = useRouter();
   const [items, setItems] = useState(initialItems);
+  const [savedViews, setSavedViews] = useState<SavedViewItem[]>(initialViews);
   const [showAdd, setShowAdd] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult | null>(null);
   const [searching, setSearching] = useState(false);
   const [adding, setAdding] = useState<string | null>(null);
   const [removing, setRemoving] = useState<number | null>(null);
+  const [togglingView, setTogglingView] = useState<number | null>(null);
+  const [deletingView, setDeletingView] = useState<number | null>(null);
 
   const doSearch = useCallback(async (q: string) => {
     if (q.length < 2) {
@@ -120,6 +142,50 @@ export function WatchlistClient({ initialItems }: { initialItems: WatchlistItem[
     } finally {
       setRemoving(null);
     }
+  }
+
+  async function toggleViewNotify(view: SavedViewItem) {
+    setTogglingView(view.id);
+    try {
+      const res = await fetch(`/api/saved-views/${view.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notifyEnabled: !view.notifyEnabled }),
+      });
+      if (res.ok) {
+        setSavedViews((prev) =>
+          prev.map((v) =>
+            v.id === view.id ? { ...v, notifyEnabled: !v.notifyEnabled } : v
+          )
+        );
+      }
+    } finally {
+      setTogglingView(null);
+    }
+  }
+
+  async function deleteView(viewId: number) {
+    setDeletingView(viewId);
+    try {
+      const res = await fetch(`/api/saved-views/${viewId}`, { method: "DELETE" });
+      if (res.ok) {
+        setSavedViews((prev) => prev.filter((v) => v.id !== viewId));
+      }
+    } finally {
+      setDeletingView(null);
+    }
+  }
+
+  function getFilterSummary(filters: Record<string, unknown>): string {
+    const parts: string[] = [];
+    if (filters.search) parts.push(`"${filters.search}"`);
+    if (filters.genre) parts.push(`Genre: ${filters.genre}`);
+    if (filters.segment) parts.push(`Type: ${filters.segment}`);
+    if (filters.status) parts.push(`Status: ${filters.status}`);
+    if (filters.minScore) parts.push(`Score ${filters.minScore}+`);
+    if (filters.venue) parts.push(`Venue filter`);
+    if (filters.sort) parts.push(`Sort: ${filters.sort}`);
+    return parts.length > 0 ? parts.join(" · ") : "All events";
   }
 
   const artistItems = items.filter((i) => i.itemType === "artist");
@@ -278,6 +344,94 @@ export function WatchlistClient({ initialItems }: { initialItems: WatchlistItem[
           </CardContent>
         </Card>
       )}
+
+      {/* Saved Event Filters */}
+      <Card className="border-primary">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Filter className="h-4 w-4 text-green-600" />
+            Saved Event Filters
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {savedViews.length === 0 ? (
+            <div className="py-6 text-center">
+              <p className="mb-3 text-sm text-muted-foreground">
+                No saved filters yet. Save a filter on the Events page to get notified about new matching events.
+              </p>
+              <Link href="/events">
+                <Button variant="outline">
+                  Go to Events
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {savedViews.map((view) => (
+                <div
+                  key={view.id}
+                  className="flex items-center justify-between rounded-lg border p-3"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium">{view.name}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {getFilterSummary(view.filters)}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className={
+                        view.notifyEnabled
+                          ? "text-green-600 hover:text-green-700"
+                          : "text-muted-foreground hover:text-foreground"
+                      }
+                      disabled={togglingView === view.id}
+                      onClick={() => toggleViewNotify(view)}
+                      title={view.notifyEnabled ? "Disable notifications" : "Enable notifications"}
+                    >
+                      {togglingView === view.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : view.notifyEnabled ? (
+                        <Bell className="h-4 w-4" />
+                      ) : (
+                        <BellOff className="h-4 w-4" />
+                      )}
+                    </Button>
+                    <Link href={`/events?${new URLSearchParams(view.filters as Record<string, string>).toString()}`}>
+                      <Button size="sm" variant="ghost" title="View events">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </Link>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-muted-foreground hover:text-red-600"
+                      disabled={deletingView === view.id}
+                      onClick={() => deleteView(view.id)}
+                      title="Delete filter"
+                    >
+                      {deletingView === view.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              <Link href="/events">
+                <Button variant="outline" className="mt-2 w-full">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create New Filter
+                </Button>
+              </Link>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Watched Artists */}
       <Card>

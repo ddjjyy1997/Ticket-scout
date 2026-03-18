@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { watchlists, watchlistItems } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { watchlists, watchlistItems, savedViews } from "@/db/schema";
+import { eq, desc } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { WatchlistClient } from "./watchlist-client";
 
@@ -23,15 +23,22 @@ export default async function WatchlistPage() {
       .returning();
   }
 
-  const items = await db.query.watchlistItems.findMany({
-    where: eq(watchlistItems.watchlistId, watchlist.id),
-    with: {
-      artist: true,
-      venue: true,
-      event: true,
-    },
-    orderBy: (item, { desc }) => [desc(item.createdAt)],
-  });
+  const [items, views] = await Promise.all([
+    db.query.watchlistItems.findMany({
+      where: eq(watchlistItems.watchlistId, watchlist.id),
+      with: {
+        artist: true,
+        venue: true,
+        event: true,
+      },
+      orderBy: (item, { desc }) => [desc(item.createdAt)],
+    }),
+    db
+      .select()
+      .from(savedViews)
+      .where(eq(savedViews.userId, session.user.id))
+      .orderBy(desc(savedViews.createdAt)),
+  ]);
 
   const initialItems = items.map((item) => ({
     id: item.id,
@@ -48,5 +55,13 @@ export default async function WatchlistPage() {
       : null,
   }));
 
-  return <WatchlistClient initialItems={initialItems} />;
+  const initialViews = views.map((v) => ({
+    id: v.id,
+    name: v.name,
+    filters: v.filters as Record<string, unknown>,
+    notifyEnabled: v.notifyEnabled,
+    createdAt: v.createdAt.toISOString(),
+  }));
+
+  return <WatchlistClient initialItems={initialItems} initialViews={initialViews} />;
 }

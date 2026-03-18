@@ -195,7 +195,7 @@ export function EventFilters({
       const res = await fetch("/api/saved-views", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: viewName.trim(), filters: getCurrentFilters() }),
+        body: JSON.stringify({ name: viewName.trim(), filters: getCurrentFilters(), notifyEnabled: true }),
       });
       if (res.ok) {
         const { view } = await res.json();
@@ -284,98 +284,40 @@ export function EventFilters({
           </select>
         )}
 
-        {/* Save / Manage buttons */}
-        <div className="relative flex gap-1">
-          <button
-            onClick={() => setShowSaveForm(!showSaveForm)}
-            title="Save current view"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border hover:bg-muted"
-          >
-            <Bookmark className="h-4 w-4" />
-          </button>
-
-          {views.length > 0 && (
+        {/* Save & Watch button */}
+        <div className="relative">
+          {hasFilters && (
             <button
-              onClick={() => setShowManage(!showManage)}
-              title="Manage saved views"
-              className="inline-flex h-9 items-center rounded-md border border-border px-2 text-xs hover:bg-muted"
+              onClick={() => setShowSaveForm(!showSaveForm)}
+              className="inline-flex h-9 items-center gap-2 rounded-md bg-green-600 px-4 text-sm font-medium text-white hover:bg-green-700"
             >
-              Manage
+              <Bell className="h-4 w-4" />
+              Save &amp; Watch
             </button>
           )}
 
           {/* Save form popover */}
           {showSaveForm && (
-            <div className="absolute right-0 top-10 z-50 flex gap-1 rounded-md border border-border bg-background p-2 shadow-lg">
+            <div className="absolute right-0 top-10 z-50 w-72 rounded-md border border-border bg-background p-4 shadow-lg">
+              <p className="mb-1 text-sm font-medium">Save &amp; Watch This Filter</p>
+              <p className="mb-3 text-xs text-muted-foreground">
+                You&apos;ll get notified when new events match these filters.
+              </p>
               <input
                 type="text"
-                placeholder="View name..."
+                placeholder="Filter name..."
                 value={viewName}
                 onChange={(e) => setViewName(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && saveView()}
-                className="h-8 w-40 rounded-md border border-border bg-background px-2 text-xs outline-none focus:border-primary"
+                className="mb-3 h-9 w-full rounded-md border border-border bg-background px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
                 autoFocus
               />
               <button
                 onClick={saveView}
-                className="h-8 rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary/90"
+                className="h-9 w-full rounded-md bg-green-600 text-sm font-medium text-white hover:bg-green-700"
               >
-                Save
+                Save &amp; Enable Notifications
               </button>
-            </div>
-          )}
-
-          {/* Manage popover */}
-          {showManage && (
-            <div
-              ref={manageRef}
-              className="absolute right-0 top-10 z-50 w-72 rounded-md border border-border bg-background p-3 shadow-lg"
-            >
-              <p className="mb-2 text-xs font-medium text-muted-foreground">
-                Saved Views
-              </p>
-              <div className="space-y-1">
-                {views.map((v) => (
-                  <div
-                    key={v.id}
-                    className="flex items-center justify-between rounded-md px-2 py-1.5 hover:bg-muted"
-                  >
-                    <button
-                      onClick={() => {
-                        loadView(v);
-                        setShowManage(false);
-                      }}
-                      className="flex-1 text-left text-xs"
-                    >
-                      {v.name}
-                    </button>
-                    <div className="flex gap-1">
-                      <button
-                        onClick={() => toggleNotify(v)}
-                        title={v.notifyEnabled ? "Disable notifications" : "Enable notifications"}
-                        className={`inline-flex h-6 w-6 items-center justify-center rounded ${
-                          v.notifyEnabled
-                            ? "text-primary"
-                            : "text-muted-foreground hover:text-foreground"
-                        }`}
-                      >
-                        {v.notifyEnabled ? (
-                          <Bell className="h-3.5 w-3.5" />
-                        ) : (
-                          <BellOff className="h-3.5 w-3.5" />
-                        )}
-                      </button>
-                      <button
-                        onClick={() => deleteView(v.id)}
-                        title="Delete view"
-                        className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground hover:text-red-600"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           )}
         </div>
