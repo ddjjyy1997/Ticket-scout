@@ -340,13 +340,13 @@ export function EventFilters({
         />
 
         <select
-          value={currentSegment ?? "Music"}
-          onChange={(e) => updateFilter("segment", e.target.value === "Music" ? undefined : e.target.value)}
+          value={currentSegment ?? "all"}
+          onChange={(e) => updateFilter("segment", e.target.value === "all" ? undefined : e.target.value)}
           className="h-8 rounded-md border border-border bg-background px-2 text-xs outline-none focus:border-primary"
         >
+          <option value="all">All Types</option>
           <option value="Music">Music</option>
           <option value="Sports">Sports</option>
-          <option value="all">All Types</option>
         </select>
 
         <MultiSelect

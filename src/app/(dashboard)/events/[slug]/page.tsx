@@ -221,6 +221,16 @@ export default async function EventDetailPage({
         </div>
       </div>
 
+      {/* All Games/Shows — same artist events listed prominently at top */}
+      <SimilarEvents
+        eventId={event.id}
+        genre={event.genre}
+        venueId={event.venueId}
+        artistIds={event.artists?.map((ea) => ea.artist.id) ?? []}
+        artistName={event.artists?.find((ea) => ea.isPrimary)?.artist.name ?? event.artists?.[0]?.artist.name}
+        segment={event.segment}
+      />
+
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Onsale Timeline */}
         <Card className="lg:col-span-2">
@@ -449,15 +459,6 @@ export default async function EventDetailPage({
         />
       </div>
 
-      {/* Similar Events */}
-      <SimilarEvents
-        eventId={event.id}
-        genre={event.genre}
-        venueId={event.venueId}
-        artistIds={event.artists?.map((ea) => ea.artist.id) ?? []}
-        artistName={event.artists?.find((ea) => ea.isPrimary)?.artist.name ?? event.artists?.[0]?.artist.name}
-        segment={event.segment}
-      />
     </div>
   );
 }

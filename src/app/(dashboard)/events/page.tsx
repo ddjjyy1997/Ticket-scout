@@ -301,7 +301,7 @@ export default async function EventsPage({
     ? params.genre.split(",").filter(Boolean)
     : undefined;
   const segmentParam = typeof params.segment === "string" ? params.segment : undefined;
-  const segment = segmentParam === "all" ? undefined : (segmentParam ?? "Music"); // Default to Music
+  const segment = segmentParam ? (segmentParam === "all" ? undefined : segmentParam) : undefined; // Default to All Types
   const minBuyScore = typeof params.minScore === "string" ? parseInt(params.minScore) : undefined;
   const sort = (typeof params.sort === "string" ? params.sort : "date_asc") as
     | "date_asc"
@@ -353,7 +353,7 @@ export default async function EventsPage({
         currentVenues={venueIds}
         currentStatuses={statusList}
         currentGenres={genreList}
-        currentSegment={segmentParam === "all" ? "all" : (segment ?? "Music")}
+        currentSegment={segmentParam ?? "all"}
         currentSort={sort}
         currentSearch={search}
         currentMinScore={minBuyScore}
