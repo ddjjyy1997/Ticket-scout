@@ -404,6 +404,10 @@ export function EventFilters({
           <option value="date_asc">Date (soonest)</option>
           <option value="date_desc">Date (furthest)</option>
           <option value="newest">Recently added</option>
+          <option value="score_desc">Score (highest)</option>
+          <option value="score_asc">Score (lowest)</option>
+          <option value="price_asc">Price (low to high)</option>
+          <option value="price_desc">Price (high to low)</option>
           <option value="name">Name A-Z</option>
         </select>
 

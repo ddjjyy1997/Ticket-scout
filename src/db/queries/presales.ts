@@ -49,6 +49,7 @@ export interface PresaleFilterOptions {
   segment?: string;
   search?: string;
   windowType?: "all" | "presale" | "general";
+  sort?: string;
   from?: Date;
   to?: Date;
 }
@@ -157,10 +158,23 @@ export async function getUpcomingPresales(options?: PresaleFilterOptions): Promi
     }
   }
 
-  // Sort by earliest start, paginate
-  const sorted = [...grouped.values()].sort(
-    (a, b) => a.earliestStart.getTime() - b.earliestStart.getTime()
-  );
+  // Sort based on option
+  const allGroups = [...grouped.values()];
+  const sorted = allGroups.sort((a, b) => {
+    switch (options?.sort) {
+      case "date_desc":
+        return b.earliestStart.getTime() - a.earliestStart.getTime();
+      case "event_asc":
+        return a.event.eventDate.getTime() - b.event.eventDate.getTime();
+      case "newest":
+        return b.event.id - a.event.id;
+      case "name":
+        return a.event.name.localeCompare(b.event.name);
+      case "date_asc":
+      default:
+        return a.earliestStart.getTime() - b.earliestStart.getTime();
+    }
+  });
 
   const paginated = sorted.slice(offset, offset + limit);
 

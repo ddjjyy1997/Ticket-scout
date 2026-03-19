@@ -239,7 +239,7 @@ export async function getEventsWithScores(options?: {
   genres?: string[];
   segment?: string;
   search?: string;
-  sort?: "date_asc" | "date_desc" | "newest" | "name";
+  sort?: string;
   futureOnly?: boolean;
   minBuyScore?: number;
 }) {
@@ -267,6 +267,14 @@ export async function getEventsWithScores(options?: {
       case "date_asc": return (e: typeof events) => [asc(e.eventDate)];
       case "date_desc": return (e: typeof events) => [desc(e.eventDate)];
       case "name": return (e: typeof events) => [asc(e.name)];
+      case "score_desc": return (e: typeof events) => [
+        sql`(SELECT buy_score FROM event_scores WHERE event_scores.event_id = ${e.id} ORDER BY scored_at DESC LIMIT 1) DESC NULLS LAST`,
+      ];
+      case "score_asc": return (e: typeof events) => [
+        sql`(SELECT buy_score FROM event_scores WHERE event_scores.event_id = ${e.id} ORDER BY scored_at DESC LIMIT 1) ASC NULLS LAST`,
+      ];
+      case "price_asc": return (e: typeof events) => [sql`CAST(${e.priceMin} AS NUMERIC) ASC NULLS LAST`];
+      case "price_desc": return (e: typeof events) => [sql`CAST(${e.priceMax} AS NUMERIC) DESC NULLS LAST`];
       case "newest":
       default: return (e: typeof events) => [desc(e.createdAt)];
     }

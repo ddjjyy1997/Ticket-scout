@@ -84,10 +84,11 @@ export default async function PresalesPage({
     | "all"
     | "presale"
     | "general";
+  const sort = typeof params.sort === "string" ? params.sort : undefined;
   const page = typeof params.page === "string" ? Math.max(1, parseInt(params.page)) : 1;
   const offset = (page - 1) * PAGE_SIZE;
 
-  const filterOpts = { venueIds, genres, segment, search, windowType };
+  const filterOpts = { venueIds, genres, segment, search, windowType, sort };
 
   const [presales, totalCount, filterOptions] = await Promise.all([
     getUpcomingPresales({ ...filterOpts, limit: PAGE_SIZE, offset }),
@@ -205,6 +206,7 @@ export default async function PresalesPage({
         currentSegment={segment}
         currentType={windowType}
         currentSearch={search}
+        currentSort={sort}
       />
 
       {grouped.length === 0 ? (

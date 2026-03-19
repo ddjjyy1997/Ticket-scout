@@ -14,6 +14,7 @@ interface FilterProps {
   currentSegment?: string;
   currentType?: string;
   currentSearch?: string;
+  currentSort?: string;
 }
 
 export function PresaleFilters({
@@ -25,6 +26,7 @@ export function PresaleFilters({
   currentSegment,
   currentType,
   currentSearch,
+  currentSort,
 }: FilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -141,6 +143,18 @@ export function PresaleFilters({
             <option value="all">All Types</option>
           </select>
         )}
+
+        <select
+          value={currentSort ?? "date_asc"}
+          onChange={(e) => updateFilter("sort", e.target.value === "date_asc" ? undefined : e.target.value)}
+          className="h-8 rounded-md border border-border bg-background px-2 text-xs outline-none focus:border-primary"
+        >
+          <option value="date_asc">Presale (soonest)</option>
+          <option value="date_desc">Presale (furthest)</option>
+          <option value="event_asc">Event date (soonest)</option>
+          <option value="newest">Recently added</option>
+          <option value="name">Name A-Z</option>
+        </select>
 
         {hasFilters && (
           <button
