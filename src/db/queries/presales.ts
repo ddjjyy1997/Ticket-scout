@@ -117,7 +117,7 @@ export async function getUpcomingPresales(options?: PresaleFilterOptions): Promi
       currency: events.currency,
       venueId: venues.id,
       venueName: venues.name,
-      buyScore: sql<number | null>`(SELECT buy_score FROM event_scores WHERE event_scores.event_id = ${events.id} ORDER BY scored_at DESC LIMIT 1)`,
+      buyScore: sql<number | null>`(SELECT buy_score FROM event_scores WHERE event_scores.event_id = ${events.id} LIMIT 1)`,
     })
     .from(onsaleWindows)
     .innerJoin(events, eq(onsaleWindows.eventId, events.id))
