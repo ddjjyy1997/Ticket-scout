@@ -70,6 +70,134 @@ export const VENUES = [
   // ── Victoria ─────────────────────────────────────────────
   { name: "Save-On-Foods Memorial Centre", slug: "save-on-foods-memorial-centre", capacity: 7006, tmVenueId: "KovZpZAaeAJA", city: "Victoria" },
   { name: "Royal Theatre", slug: "royal-theatre-victoria", capacity: 1416, tmVenueId: "KovZpZAk1tlA", city: "Victoria" },
+
+  // ═══════════════════════════════════════════════════════════
+  // US Venues
+  // ═══════════════════════════════════════════════════════════
+
+  // ── New York / NJ ──────────────────────────────────────────
+  { name: "Madison Square Garden", slug: "madison-square-garden", capacity: 20789, tmVenueId: "KovZpZA7AAEA", city: "New York" },
+  { name: "Barclays Center", slug: "barclays-center", capacity: 19000, tmVenueId: "KovZ917AtP3", city: "Brooklyn" },
+  { name: "MetLife Stadium", slug: "metlife-stadium", capacity: 82500, tmVenueId: "KovZpakS7e", city: "East Rutherford" },
+  { name: "UBS Arena", slug: "ubs-arena", capacity: 17255, tmVenueId: "KovZ917AkU0", city: "Elmont" },
+
+  // ── Los Angeles ────────────────────────────────────────────
+  { name: "Kia Forum", slug: "kia-forum", capacity: 17505, tmVenueId: "KovZpZAEkn6A", city: "Inglewood" },
+  { name: "Crypto.com Arena", slug: "crypto-com-arena", capacity: 20000, tmVenueId: "KovZpZAFnEeA", city: "Los Angeles" },
+  { name: "SoFi Stadium", slug: "sofi-stadium", capacity: 70240, tmVenueId: "KovZ917AOJ0", city: "Inglewood" },
+  { name: "Hollywood Bowl", slug: "hollywood-bowl", capacity: 17500, tmVenueId: "KovZpa3h7e", city: "Los Angeles" },
+  { name: "BMO Stadium", slug: "bmo-stadium", capacity: 22000, tmVenueId: "KovZ917Akdz", city: "Los Angeles" },
+
+  // ── Chicago ────────────────────────────────────────────────
+  { name: "United Center", slug: "united-center", capacity: 20917, tmVenueId: "KovZpa2M7e", city: "Chicago" },
+  { name: "Wrigley Field", slug: "wrigley-field", capacity: 41649, tmVenueId: "KovZpZAJtJJA", city: "Chicago" },
+  { name: "Soldier Field", slug: "soldier-field", capacity: 61500, tmVenueId: "KovZpZAJe6lA", city: "Chicago" },
+
+  // ── Miami / South Florida ──────────────────────────────────
+  { name: "Kaseya Center", slug: "kaseya-center", capacity: 19600, tmVenueId: "KovZpZAJtFaA", city: "Miami" },
+  { name: "Hard Rock Stadium", slug: "hard-rock-stadium", capacity: 65326, tmVenueId: "KovZpZAFnFaA", city: "Miami Gardens" },
+
+  // ── Dallas / Fort Worth ────────────────────────────────────
+  { name: "American Airlines Center", slug: "american-airlines-center", capacity: 19200, tmVenueId: "KovZpZAJ67eA", city: "Dallas" },
+  { name: "AT&T Stadium", slug: "att-stadium", capacity: 80000, tmVenueId: "KovZpa3GJe", city: "Arlington" },
+  { name: "Dickies Arena", slug: "dickies-arena", capacity: 14000, tmVenueId: "KovZ917AOAw", city: "Fort Worth" },
+
+  // ── Houston ────────────────────────────────────────────────
+  { name: "Toyota Center", slug: "toyota-center", capacity: 18104, tmVenueId: "KovZpZAFnFEA", city: "Houston" },
+  { name: "NRG Stadium", slug: "nrg-stadium", capacity: 72220, tmVenueId: "KovZpZAEdFeA", city: "Houston" },
+  { name: "Minute Maid Park", slug: "minute-maid-park", capacity: 41168, tmVenueId: "KovZpZAJta7A", city: "Houston" },
+
+  // ── Atlanta ────────────────────────────────────────────────
+  { name: "State Farm Arena", slug: "state-farm-arena", capacity: 21000, tmVenueId: "KovZpa2Xke", city: "Atlanta" },
+  { name: "Mercedes-Benz Stadium", slug: "mercedes-benz-stadium", capacity: 71000, tmVenueId: "KovZpZAJEFIA", city: "Atlanta" },
+
+  // ── Phoenix ────────────────────────────────────────────────
+  { name: "Mortgage Matchup Center", slug: "mortgage-matchup-center", capacity: 18422, tmVenueId: "KovZpZAE617A", city: "Phoenix" },
+  { name: "State Farm Stadium", slug: "state-farm-stadium", capacity: 63400, tmVenueId: "KovZpZAFaeIA", city: "Glendale" },
+  { name: "Desert Diamond Arena", slug: "desert-diamond-arena", capacity: 17125, tmVenueId: "KovZpZAJEFAA", city: "Glendale" },
+
+  // ── Philadelphia ───────────────────────────────────────────
+  { name: "Xfinity Mobile Arena", slug: "xfinity-mobile-arena", capacity: 20478, tmVenueId: "KovZ917AiMF", city: "Philadelphia" },
+  { name: "Lincoln Financial Field", slug: "lincoln-financial-field", capacity: 69176, tmVenueId: "KovZpZAFnFnA", city: "Philadelphia" },
+  { name: "Citizens Bank Park", slug: "citizens-bank-park", capacity: 43651, tmVenueId: "KovZpZAEkveA", city: "Philadelphia" },
+
+  // ── Washington DC ──────────────────────────────────────────
+  { name: "Capital One Arena", slug: "capital-one-arena", capacity: 20356, tmVenueId: "KovZpaKuJe", city: "Washington" },
+  { name: "Nationals Park", slug: "nationals-park", capacity: 41313, tmVenueId: "KovZpZAJtF7A", city: "Washington" },
+
+  // ── Boston ─────────────────────────────────────────────────
+  { name: "TD Garden", slug: "td-garden", capacity: 19580, tmVenueId: "KovZpa2gne", city: "Boston" },
+  { name: "Fenway Park", slug: "fenway-park", capacity: 37755, tmVenueId: "KovZpZAJtJnA", city: "Boston" },
+
+  // ── San Francisco / Bay Area ───────────────────────────────
+  { name: "Chase Center", slug: "chase-center", capacity: 18064, tmVenueId: "KovZ917Ah1H", city: "San Francisco" },
+  { name: "Oracle Park", slug: "oracle-park", capacity: 41915, tmVenueId: "KovZpZAJtJFA", city: "San Francisco" },
+  { name: "SAP Center", slug: "sap-center", capacity: 17496, tmVenueId: "KovZpZAFnFIA", city: "San Jose" },
+
+  // ── Denver ─────────────────────────────────────────────────
+  { name: "Ball Arena", slug: "ball-arena", capacity: 20000, tmVenueId: "KovZpZAFaJeA", city: "Denver" },
+  { name: "Empower Field at Mile High", slug: "empower-field-at-mile-high", capacity: 76125, tmVenueId: "KovZpZAJdnAA", city: "Denver" },
+
+  // ── Nashville ──────────────────────────────────────────────
+  { name: "Bridgestone Arena", slug: "bridgestone-arena", capacity: 20000, tmVenueId: "KovZpZA6taAA", city: "Nashville" },
+  { name: "Nissan Stadium", slug: "nissan-stadium", capacity: 69143, tmVenueId: "KovZpZAJdn7A", city: "Nashville" },
+
+  // ── Detroit ────────────────────────────────────────────────
+  { name: "Little Caesars Arena", slug: "little-caesars-arena", capacity: 20332, tmVenueId: "KovZ917A25V", city: "Detroit" },
+  { name: "Ford Field", slug: "ford-field", capacity: 65000, tmVenueId: "KovZpZAJtnlA", city: "Detroit" },
+
+  // ── Minneapolis ────────────────────────────────────────────
+  { name: "Target Center", slug: "target-center", capacity: 18798, tmVenueId: "KovZpZAFnEIA", city: "Minneapolis" },
+  { name: "US Bank Stadium", slug: "us-bank-stadium", capacity: 73000, tmVenueId: "KovZpZAJEFnA", city: "Minneapolis" },
+
+  // ── Seattle ────────────────────────────────────────────────
+  { name: "Climate Pledge Arena", slug: "climate-pledge-arena", capacity: 17100, tmVenueId: "KovZ917AkJl", city: "Seattle" },
+  { name: "Lumen Field", slug: "lumen-field", capacity: 72000, tmVenueId: "KovZpZAJdn1A", city: "Seattle" },
+
+  // ── Las Vegas ──────────────────────────────────────────────
+  { name: "Sphere", slug: "sphere-las-vegas", capacity: 18600, tmVenueId: "KovZ917Atbr", city: "Las Vegas" },
+  { name: "Allegiant Stadium", slug: "allegiant-stadium", capacity: 65000, tmVenueId: "KovZ917Ax7n", city: "Las Vegas" },
+  { name: "T-Mobile Arena", slug: "t-mobile-arena", capacity: 20000, tmVenueId: "KovZpZAJtJlA", city: "Las Vegas" },
+
+  // ── Tampa ──────────────────────────────────────────────────
+  { name: "Benchmark International Arena", slug: "benchmark-international-arena", capacity: 20500, tmVenueId: "KovZpZA6k7IA", city: "Tampa" },
+  { name: "Raymond James Stadium", slug: "raymond-james-stadium", capacity: 65890, tmVenueId: "KovZpZAJdnlA", city: "Tampa" },
+
+  // ── Orlando ────────────────────────────────────────────────
+  { name: "Kia Center", slug: "kia-center", capacity: 20000, tmVenueId: "KovZpZAEvEEA", city: "Orlando" },
+
+  // ── San Diego ──────────────────────────────────────────────
+  { name: "Pechanga Arena", slug: "pechanga-arena", capacity: 14500, tmVenueId: "KovZpZAFnEnA", city: "San Diego" },
+  { name: "Petco Park", slug: "petco-park", capacity: 42445, tmVenueId: "KovZpZAJt7lA", city: "San Diego" },
+
+  // ── Charlotte ──────────────────────────────────────────────
+  { name: "Spectrum Center", slug: "spectrum-center", capacity: 19077, tmVenueId: "KovZpZA6AEIA", city: "Charlotte" },
+  { name: "Bank of America Stadium", slug: "bank-of-america-stadium", capacity: 75523, tmVenueId: "KovZpa3hje", city: "Charlotte" },
+
+  // ── Pittsburgh ─────────────────────────────────────────────
+  { name: "PPG Paints Arena", slug: "ppg-paints-arena", capacity: 19758, tmVenueId: "KovZpZAEdF6A", city: "Pittsburgh" },
+
+  // ── Portland ───────────────────────────────────────────────
+  { name: "Moda Center", slug: "moda-center", capacity: 19441, tmVenueId: "KovZpZAEkveA", city: "Portland" },
+
+  // ── St. Louis ──────────────────────────────────────────────
+  { name: "Enterprise Center", slug: "enterprise-center", capacity: 19150, tmVenueId: "KovZpZAEkvAA", city: "St. Louis" },
+
+  // ── New Orleans ────────────────────────────────────────────
+  { name: "Smoothie King Center", slug: "smoothie-king-center", capacity: 16867, tmVenueId: "KovZpZAJtn7A", city: "New Orleans" },
+  { name: "Caesars Superdome", slug: "caesars-superdome", capacity: 73208, tmVenueId: "KovZpZAJtFEA", city: "New Orleans" },
+
+  // ── Austin ─────────────────────────────────────────────────
+  { name: "Moody Center", slug: "moody-center", capacity: 15000, tmVenueId: "KovZ917AkdF", city: "Austin" },
+
+  // ── Raleigh ────────────────────────────────────────────────
+  { name: "PNC Arena", slug: "pnc-arena", capacity: 19722, tmVenueId: "KovZpZAJdnEA", city: "Raleigh" },
+
+  // ── Indianapolis ───────────────────────────────────────────
+  { name: "Gainbridge Fieldhouse", slug: "gainbridge-fieldhouse", capacity: 18165, tmVenueId: "KovZpZAFnEeA", city: "Indianapolis" },
+
+  // ── Milwaukee ──────────────────────────────────────────────
+  { name: "Fiserv Forum", slug: "fiserv-forum", capacity: 17341, tmVenueId: "KovZ917Aa40", city: "Milwaukee" },
 ] as const;
 
 // Backwards compat alias
