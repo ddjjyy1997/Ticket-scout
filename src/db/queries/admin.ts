@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { scanRuns, scanLogs, apiUsageLogs, events, artists, venues } from "@/db/schema";
+import { scanRuns, scanLogs, apiUsageLogs, events, artists, venues, presaleCodes, presaleCodeVotes } from "@/db/schema";
 import { desc, count, eq, sql, gte } from "drizzle-orm";
 
 export async function getRecentScanRuns(limit = 20) {
@@ -28,6 +28,20 @@ export async function getAdminStats() {
     .orderBy(desc(scanRuns.startedAt))
     .limit(1);
 
+  // Presale code stats
+  const [totalCodes] = await db.select({ count: count() }).from(presaleCodes);
+  const [verifiedCodes] = await db
+    .select({ count: count() })
+    .from(presaleCodes)
+    .where(eq(presaleCodes.status, "verified"));
+  const [votedCodes] = await db
+    .select({ count: sql<number>`COUNT(DISTINCT ${presaleCodeVotes.codeId})` })
+    .from(presaleCodeVotes);
+  const [autoScannedCodes] = await db
+    .select({ count: count() })
+    .from(presaleCodes)
+    .where(eq(presaleCodes.source, "scraped"));
+
   return {
     events: eventCount.count,
     artists: artistCount.count,
@@ -35,6 +49,12 @@ export async function getAdminStats() {
     scans: scanCount.count,
     todayApiCalls: todayApiCalls.count,
     lastScan: lastScan ?? null,
+    presaleCodes: {
+      total: totalCodes.count,
+      verified: verifiedCodes.count,
+      voted: Number(votedCodes.count),
+      autoScanned: autoScannedCodes.count,
+    },
   };
 }
 
