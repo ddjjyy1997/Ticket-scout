@@ -2,11 +2,11 @@
   "crons": [
     {
       "path": "/api/cron/scan-events",
-      "schedule": "0 6 * * *"
+      "schedule": "0 10 * * *"
     },
     {
-      "path": "/api/cron/scan-codes?mode=morning",
-      "schedule": "30 5 * * *"
+      "path": "/api/cron/recalculate-scores",
+      "schedule": "0 11 * * *"
     }
   ]
 }
