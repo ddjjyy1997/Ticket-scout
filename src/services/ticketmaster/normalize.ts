@@ -48,11 +48,12 @@ const SPORTS_PATTERNS: { pattern: RegExp; genre: string }[] = [
   { pattern: /\bvs\.?\s/i, genre: "Sports" }, // generic "vs" pattern
 ];
 
-function inferSegment(name: string): string | null {
+function inferSegment(name: string): string {
   for (const { pattern } of SPORTS_PATTERNS) {
     if (pattern.test(name)) return "Sports";
   }
-  return null;
+  // Default to Music — if it's at a concert venue and not sports, it's music
+  return "Music";
 }
 
 function inferGenre(name: string): string | null {
