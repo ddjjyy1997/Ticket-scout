@@ -52,6 +52,7 @@ export interface PresaleFilterOptions {
   sort?: string;
   from?: Date;
   to?: Date;
+  city?: string;
 }
 
 export async function getUpcomingPresales(options?: PresaleFilterOptions): Promise<GroupedPresaleRow[]> {
@@ -75,6 +76,9 @@ export async function getUpcomingPresales(options?: PresaleFilterOptions): Promi
   }
   if (options?.search) {
     conditions.push(ilike(events.name, `%${options.search}%`));
+  }
+  if (options?.city) {
+    conditions.push(eq(venues.city, options.city));
   }
   if (options?.from) {
     conditions.push(gte(onsaleWindows.startDate, options.from));
@@ -225,6 +229,9 @@ export async function getPresaleCount(options?: PresaleFilterOptions): Promise<n
   if (options?.search) {
     conditions.push(ilike(events.name, `%${options.search}%`));
   }
+  if (options?.city) {
+    conditions.push(eq(venues.city, options.city));
+  }
   if (options?.from) {
     conditions.push(gte(onsaleWindows.startDate, options.from));
   }
@@ -270,9 +277,18 @@ export async function getPresaleFilterOptions() {
     .where(and(gte(onsaleWindows.startDate, now), sql`${events.segment} IS NOT NULL`))
     .orderBy(asc(events.segment));
 
+  const cityRows = await db
+    .selectDistinct({ city: venues.city })
+    .from(onsaleWindows)
+    .innerJoin(events, eq(onsaleWindows.eventId, events.id))
+    .innerJoin(venues, eq(events.venueId, venues.id))
+    .where(gte(onsaleWindows.startDate, now))
+    .orderBy(asc(venues.city));
+
   return {
     venues: venueList,
     genres: genreRows.map((r) => r.genre).filter(Boolean) as string[],
     segments: segmentRows.map((r) => r.segment).filter(Boolean) as string[],
+    cities: cityRows.map((r) => r.city).filter(Boolean) as string[],
   };
 }

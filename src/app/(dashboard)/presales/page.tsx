@@ -80,6 +80,7 @@ export default async function PresalesPage({
     ? params.genre.split(",").filter(Boolean)
     : undefined;
   const segment = typeof params.segment === "string" ? params.segment : undefined;
+  const city = typeof params.city === "string" ? params.city : undefined;
   const windowType = (typeof params.type === "string" ? params.type : "all") as
     | "all"
     | "presale"
@@ -88,7 +89,7 @@ export default async function PresalesPage({
   const page = typeof params.page === "string" ? Math.max(1, parseInt(params.page)) : 1;
   const offset = (page - 1) * PAGE_SIZE;
 
-  const filterOpts = { venueIds, genres, segment, search, windowType, sort };
+  const filterOpts = { venueIds, genres, segment, search, windowType, sort, city };
 
   const [presales, totalCount, filterOptions] = await Promise.all([
     getUpcomingPresales({ ...filterOpts, limit: PAGE_SIZE, offset }),
@@ -108,6 +109,7 @@ export default async function PresalesPage({
     if (venueIds?.length) sp.set("venue", venueIds.join(","));
     if (genres?.length) sp.set("genre", genres.join(","));
     if (segment) sp.set("segment", segment);
+    if (city) sp.set("city", city);
     if (windowType !== "all") sp.set("type", windowType);
     if (p > 1) sp.set("page", String(p));
     const qs = sp.toString();
@@ -201,9 +203,11 @@ export default async function PresalesPage({
         venues={filterOptions.venues}
         genres={filterOptions.genres}
         segments={filterOptions.segments}
+        cities={filterOptions.cities}
         currentVenues={venueIds}
         currentGenres={genres}
         currentSegment={segment}
+        currentCity={city}
         currentType={windowType}
         currentSearch={search}
         currentSort={sort}

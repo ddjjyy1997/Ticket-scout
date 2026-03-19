@@ -9,9 +9,11 @@ interface FilterProps {
   venues: { id: number; name: string }[];
   genres: string[];
   segments: string[];
+  cities: string[];
   currentVenues?: number[];
   currentGenres?: string[];
   currentSegment?: string;
+  currentCity?: string;
   currentType?: string;
   currentSearch?: string;
   currentSort?: string;
@@ -21,9 +23,11 @@ export function PresaleFilters({
   venues,
   genres,
   segments,
+  cities,
   currentVenues,
   currentGenres,
   currentSegment,
+  currentCity,
   currentType,
   currentSearch,
   currentSort,
@@ -83,6 +87,7 @@ export function PresaleFilters({
     (currentVenues?.length ?? 0) > 0 ||
     (currentGenres?.length ?? 0) > 0 ||
     currentSegment ||
+    currentCity ||
     (currentType && currentType !== "all") ||
     currentSearch;
 
@@ -117,6 +122,19 @@ export function PresaleFilters({
           <option value="presale">Presales Only</option>
           <option value="general">General Onsale Only</option>
         </select>
+
+        {cities.length > 1 && (
+          <select
+            value={currentCity ?? ""}
+            onChange={(e) => updateFilter("city", e.target.value || undefined)}
+            className="h-8 rounded-md border border-border bg-background px-2 text-xs outline-none focus:border-primary"
+          >
+            <option value="">All Cities</option>
+            {cities.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        )}
 
         <MultiSelect
           options={venues.map((v) => ({ value: String(v.id), label: v.name }))}

@@ -17,10 +17,12 @@ interface FilterProps {
   genres: string[];
   segments: string[];
   statuses: { status: string; count: number }[];
+  cities: string[];
   currentVenues?: number[];
   currentStatuses?: string[];
   currentGenres?: string[];
   currentSegment?: string;
+  currentCity?: string;
   currentSort?: string;
   currentSearch?: string;
   currentMinScore?: number;
@@ -37,10 +39,12 @@ export function EventFilters({
   genres,
   segments,
   statuses,
+  cities,
   currentVenues,
   currentStatuses,
   currentGenres,
   currentSegment,
+  currentCity,
   currentSort,
   currentSearch,
   currentMinScore,
@@ -159,11 +163,12 @@ export function EventFilters({
     if (currentGenres?.length) f.genre = currentGenres.join(",");
     if (currentSegment && currentSegment !== "Music") f.segment = currentSegment;
     if (currentStatuses?.length) f.status = currentStatuses.join(",");
+    if (currentCity) f.city = currentCity;
     if (currentMinScore) f.minScore = currentMinScore;
     if (currentSort && currentSort !== "date_asc") f.sort = currentSort;
     if (currentSearch) f.search = currentSearch;
     return f;
-  }, [currentVenues, currentGenres, currentSegment, currentStatuses, currentMinScore, currentSort, currentSearch]);
+  }, [currentVenues, currentGenres, currentSegment, currentStatuses, currentCity, currentMinScore, currentSort, currentSearch]);
 
   // Load a saved view
   const loadView = useCallback(
@@ -173,6 +178,7 @@ export function EventFilters({
       if (f.venue) params.set("venue", String(f.venue));
       if (f.genre) params.set("genre", String(f.genre));
       if (f.segment) params.set("segment", String(f.segment));
+      if (f.city) params.set("city", String(f.city));
       if (f.status) params.set("status", String(f.status));
       if (f.minScore) params.set("minScore", String(f.minScore));
       if (f.sort) params.set("sort", String(f.sort));
@@ -239,6 +245,7 @@ export function EventFilters({
     (currentStatuses?.length ?? 0) > 0 ||
     (currentGenres?.length ?? 0) > 0 ||
     currentSegment ||
+    currentCity ||
     currentSearch ||
     currentMinScore;
 
@@ -325,6 +332,19 @@ export function EventFilters({
 
       {/* Filter row */}
       <div className="flex flex-wrap items-center gap-2">
+        {cities.length > 1 && (
+          <select
+            value={currentCity ?? ""}
+            onChange={(e) => updateFilter("city", e.target.value || undefined)}
+            className="h-8 rounded-md border border-border bg-background px-2 text-xs outline-none focus:border-primary"
+          >
+            <option value="">All Cities</option>
+            {cities.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        )}
+
         <MultiSelect
           options={venues.map((v) => ({ value: String(v.id), label: v.name }))}
           selected={(currentVenues ?? []).map(String)}

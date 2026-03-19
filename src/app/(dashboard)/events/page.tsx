@@ -319,6 +319,7 @@ export default async function EventsPage({
     : undefined;
   const segmentParam = typeof params.segment === "string" ? params.segment : undefined;
   const segment = segmentParam ? (segmentParam === "all" ? undefined : segmentParam) : undefined; // Default to All Types
+  const city = typeof params.city === "string" ? params.city : undefined;
   const minBuyScore = typeof params.minScore === "string" ? parseInt(params.minScore) : undefined;
   const sort = (typeof params.sort === "string" ? params.sort : "date_asc") as
     | "date_asc"
@@ -328,7 +329,7 @@ export default async function EventsPage({
   const page = typeof params.page === "string" ? Math.max(1, parseInt(params.page)) : 1;
   const offset = (page - 1) * PAGE_SIZE;
 
-  const filterOpts = { venueIds, statuses: statusList, genres: genreList, segment, search, minBuyScore };
+  const filterOpts = { venueIds, statuses: statusList, genres: genreList, segment, search, minBuyScore, city };
 
   const [evts, filterOptions, totalCount] = await Promise.all([
     getEventsWithScores({ ...filterOpts, sort, limit: PAGE_SIZE, offset }),
@@ -346,6 +347,7 @@ export default async function EventsPage({
     if (genreList?.length) sp.set("genre", genreList.join(","));
     if (segmentParam === "all") sp.set("segment", "all");
     else if (segment) sp.set("segment", segment);
+    if (city) sp.set("city", city);
     if (minBuyScore) sp.set("minScore", String(minBuyScore));
     if (sort !== "date_asc") sp.set("sort", sort);
     if (p > 1) sp.set("page", String(p));
@@ -367,10 +369,12 @@ export default async function EventsPage({
         genres={filterOptions.genres}
         segments={filterOptions.segments}
         statuses={filterOptions.statuses}
+        cities={filterOptions.cities}
         currentVenues={venueIds}
         currentStatuses={statusList}
         currentGenres={genreList}
         currentSegment={segmentParam ?? "all"}
+        currentCity={city}
         currentSort={sort}
         currentSearch={search}
         currentMinScore={minBuyScore}

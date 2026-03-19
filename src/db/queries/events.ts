@@ -242,12 +242,30 @@ export async function getEventsWithScores(options?: {
   sort?: string;
   futureOnly?: boolean;
   minBuyScore?: number;
+  city?: string;
 }) {
   const limit = options?.limit ?? 50;
   const offset = options?.offset ?? 0;
 
+  // If city filter is set, resolve matching venue IDs and merge with any explicit venueIds
+  let effectiveVenueIds = options?.venueIds;
+  if (options?.city) {
+    const cityVenues = await db
+      .select({ id: venues.id })
+      .from(venues)
+      .where(eq(venues.city, options.city));
+    const cityVenueIds = cityVenues.map((v) => v.id);
+    if (effectiveVenueIds?.length) {
+      // Intersect: only venue IDs that match both the city and the explicit filter
+      effectiveVenueIds = effectiveVenueIds.filter((id) => cityVenueIds.includes(id));
+      if (effectiveVenueIds.length === 0) effectiveVenueIds = [-1]; // no match sentinel
+    } else {
+      effectiveVenueIds = cityVenueIds.length > 0 ? cityVenueIds : [-1];
+    }
+  }
+
   const conditions = [];
-  if (options?.venueIds?.length) conditions.push(inArray(events.venueId, options.venueIds));
+  if (effectiveVenueIds?.length) conditions.push(inArray(events.venueId, effectiveVenueIds));
   if (options?.statuses?.length) conditions.push(inArray(events.status, options.statuses));
   if (options?.genres?.length) conditions.push(inArray(events.genre, options.genres));
   if (options?.segment) conditions.push(eq(events.segment, options.segment));
@@ -321,11 +339,17 @@ export async function getEventFilterOptions() {
     .groupBy(events.segment)
     .orderBy(asc(events.segment));
 
+  const cityRows = await db
+    .selectDistinct({ city: venues.city })
+    .from(venues)
+    .orderBy(asc(venues.city));
+
   return {
     venues: venueList,
     genres: genreRows.map((r) => r.genre).filter(Boolean) as string[],
     segments: segmentRows.map((r) => r.segment).filter(Boolean) as string[],
     statuses: statusRows.map((r) => ({ status: r.status, count: r.count })),
+    cities: cityRows.map((r) => r.city).filter(Boolean) as string[],
   };
 }
 
@@ -337,9 +361,26 @@ export async function getEventCount(options?: {
   search?: string;
   futureOnly?: boolean;
   minBuyScore?: number;
+  city?: string;
 }) {
+  // If city filter is set, resolve matching venue IDs
+  let effectiveVenueIds = options?.venueIds;
+  if (options?.city) {
+    const cityVenues = await db
+      .select({ id: venues.id })
+      .from(venues)
+      .where(eq(venues.city, options.city));
+    const cityVenueIds = cityVenues.map((v) => v.id);
+    if (effectiveVenueIds?.length) {
+      effectiveVenueIds = effectiveVenueIds.filter((id) => cityVenueIds.includes(id));
+      if (effectiveVenueIds.length === 0) effectiveVenueIds = [-1];
+    } else {
+      effectiveVenueIds = cityVenueIds.length > 0 ? cityVenueIds : [-1];
+    }
+  }
+
   const conditions = [];
-  if (options?.venueIds?.length) conditions.push(inArray(events.venueId, options.venueIds));
+  if (effectiveVenueIds?.length) conditions.push(inArray(events.venueId, effectiveVenueIds));
   if (options?.statuses?.length) conditions.push(inArray(events.status, options.statuses));
   if (options?.genres?.length) conditions.push(inArray(events.genre, options.genres));
   if (options?.segment) conditions.push(eq(events.segment, options.segment));
