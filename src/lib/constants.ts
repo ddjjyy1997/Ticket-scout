@@ -136,7 +136,7 @@ export const SG_API_BASE = "https://api.seatgeek.com/2";
 // Scanner event filtering
 export const SCAN_FILTER = {
   // Only ingest events in these TM segments (null segment = allow through)
-  allowedSegments: ["Music", "Sports"],
+  allowedSegments: ["Music", "Sports", "Comedy"],
   // Skip events whose names match these patterns
   nameBlacklist: [
     /guided\s+tour/i,

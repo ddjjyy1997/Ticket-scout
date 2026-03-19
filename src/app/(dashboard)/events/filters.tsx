@@ -345,8 +345,9 @@ export function EventFilters({
           className="h-8 rounded-md border border-border bg-background px-2 text-xs outline-none focus:border-primary"
         >
           <option value="all">All Types</option>
-          <option value="Music">Music</option>
-          <option value="Sports">Sports</option>
+          {segments.map((s) => (
+            <option key={s} value={s}>{s}</option>
+          ))}
         </select>
 
         <MultiSelect
