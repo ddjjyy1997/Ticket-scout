@@ -31,8 +31,8 @@ interface ScannedCode {
 export async function searchGoogle(
   artistName: string
 ): Promise<ScannedCode[]> {
-  const apiKey = process.env.GOOGLE_SEARCH_API_KEY;
-  const cx = process.env.GOOGLE_SEARCH_CX;
+  const apiKey = process.env.GOOGLE_CSE_API_KEY;
+  const cx = process.env.GOOGLE_CSE_CX;
 
   if (!apiKey || !cx) {
     console.log("[code-scanner] Google Custom Search not configured, skipping");
