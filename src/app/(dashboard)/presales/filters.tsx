@@ -17,6 +17,7 @@ interface FilterProps {
   currentType?: string;
   currentSearch?: string;
   currentSort?: string;
+  currentMinScore?: number;
 }
 
 export function PresaleFilters({
@@ -31,6 +32,7 @@ export function PresaleFilters({
   currentType,
   currentSearch,
   currentSort,
+  currentMinScore,
 }: FilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -88,6 +90,7 @@ export function PresaleFilters({
     (currentGenres?.length ?? 0) > 0 ||
     currentSegment ||
     currentCity ||
+    currentMinScore ||
     (currentType && currentType !== "all") ||
     currentSearch;
 
@@ -161,6 +164,17 @@ export function PresaleFilters({
             <option value="all">All Types</option>
           </select>
         )}
+
+        <select
+          value={currentMinScore ?? ""}
+          onChange={(e) => updateFilter("minScore", e.target.value || undefined)}
+          className="h-8 rounded-md border border-border bg-background px-2 text-xs outline-none focus:border-primary"
+        >
+          <option value="">Any Score</option>
+          <option value="30">Score 30+</option>
+          <option value="50">Score 50+</option>
+          <option value="70">Score 70+</option>
+        </select>
 
         <select
           value={currentSort ?? "date_asc"}

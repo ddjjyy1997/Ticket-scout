@@ -86,10 +86,11 @@ export default async function PresalesPage({
     | "presale"
     | "general";
   const sort = typeof params.sort === "string" ? params.sort : undefined;
+  const minScore = typeof params.minScore === "string" ? parseInt(params.minScore) || undefined : undefined;
   const page = typeof params.page === "string" ? Math.max(1, parseInt(params.page)) : 1;
   const offset = (page - 1) * PAGE_SIZE;
 
-  const filterOpts = { venueIds, genres, segment, search, windowType, sort, city };
+  const filterOpts = { venueIds, genres, segment, search, windowType, sort, city, minScore };
 
   const [presales, totalCount, filterOptions] = await Promise.all([
     getUpcomingPresales({ ...filterOpts, limit: PAGE_SIZE, offset }),
@@ -110,6 +111,7 @@ export default async function PresalesPage({
     if (genres?.length) sp.set("genre", genres.join(","));
     if (segment) sp.set("segment", segment);
     if (city) sp.set("city", city);
+    if (minScore) sp.set("minScore", String(minScore));
     if (windowType !== "all") sp.set("type", windowType);
     if (p > 1) sp.set("page", String(p));
     const qs = sp.toString();
@@ -211,6 +213,7 @@ export default async function PresalesPage({
         currentType={windowType}
         currentSearch={search}
         currentSort={sort}
+        currentMinScore={minScore}
       />
 
       {grouped.length === 0 ? (
@@ -335,6 +338,16 @@ export default async function PresalesPage({
                         {codes > 0 && (
                           <Badge className="mt-1 bg-purple-50 text-purple-700 border-purple-200 text-xs">
                             {codes} code{codes > 1 ? "s" : ""}
+                          </Badge>
+                        )}
+                        {row.buyScore !== null && row.buyScore !== undefined && (
+                          <Badge className={`mt-1 text-xs ${
+                            Number(row.buyScore) >= 70 ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                            Number(row.buyScore) >= 50 ? "bg-blue-50 text-blue-700 border-blue-200" :
+                            Number(row.buyScore) >= 30 ? "bg-amber-50 text-amber-700 border-amber-200" :
+                            "bg-muted text-muted-foreground"
+                          }`}>
+                            Score {Math.round(Number(row.buyScore))}
                           </Badge>
                         )}
                       </div>

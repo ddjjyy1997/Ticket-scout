@@ -39,6 +39,7 @@ export interface GroupedPresaleRow {
   artists: { name: string; isPrimary: boolean | null }[];
   windows: PresaleWindow[];
   earliestStart: Date;
+  buyScore: number | null;
 }
 
 export interface PresaleFilterOptions {
@@ -50,6 +51,7 @@ export interface PresaleFilterOptions {
   search?: string;
   windowType?: "all" | "presale" | "general";
   sort?: string;
+  minScore?: number;
   from?: Date;
   to?: Date;
   city?: string;
@@ -59,6 +61,7 @@ export async function getUpcomingPresales(options?: PresaleFilterOptions): Promi
   const limit = options?.limit ?? 50;
   const offset = options?.offset ?? 0;
   const now = new Date();
+  // minScore filter added below in conditions
 
   const conditions = [gte(onsaleWindows.startDate, now)];
 
@@ -79,6 +82,11 @@ export async function getUpcomingPresales(options?: PresaleFilterOptions): Promi
   }
   if (options?.city) {
     conditions.push(eq(venues.city, options.city));
+  }
+  if (options?.minScore) {
+    conditions.push(
+      sql`EXISTS (SELECT 1 FROM event_scores WHERE event_scores.event_id = ${events.id} AND event_scores.buy_score >= ${options.minScore})`
+    );
   }
   if (options?.from) {
     conditions.push(gte(onsaleWindows.startDate, options.from));
@@ -109,6 +117,7 @@ export async function getUpcomingPresales(options?: PresaleFilterOptions): Promi
       currency: events.currency,
       venueId: venues.id,
       venueName: venues.name,
+      buyScore: sql<number | null>`(SELECT buy_score FROM event_scores WHERE event_scores.event_id = ${events.id} ORDER BY scored_at DESC LIMIT 1)`,
     })
     .from(onsaleWindows)
     .innerJoin(events, eq(onsaleWindows.eventId, events.id))
@@ -122,6 +131,7 @@ export async function getUpcomingPresales(options?: PresaleFilterOptions): Promi
     venue: GroupedPresaleRow["venue"];
     windows: PresaleWindow[];
     earliestStart: Date;
+    buyScore: number | null;
   }>();
 
   for (const r of rows) {
@@ -143,6 +153,7 @@ export async function getUpcomingPresales(options?: PresaleFilterOptions): Promi
           currency: r.currency,
         },
         venue: r.venueId ? { id: r.venueId, name: r.venueName! } : null,
+        buyScore: r.buyScore ? Number(r.buyScore) : null,
         windows: [],
         earliestStart: r.windowStart,
       });
@@ -231,6 +242,11 @@ export async function getPresaleCount(options?: PresaleFilterOptions): Promise<n
   }
   if (options?.city) {
     conditions.push(eq(venues.city, options.city));
+  }
+  if (options?.minScore) {
+    conditions.push(
+      sql`EXISTS (SELECT 1 FROM event_scores WHERE event_scores.event_id = ${events.id} AND event_scores.buy_score >= ${options.minScore})`
+    );
   }
   if (options?.from) {
     conditions.push(gte(onsaleWindows.startDate, options.from));
