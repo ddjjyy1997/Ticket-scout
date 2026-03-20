@@ -1,10 +1,10 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-export function CheckoutGate({ children }: { children: React.ReactNode }) {
+function CheckoutGateInner({ children }: { children: React.ReactNode }) {
   const { data: session, status, update } = useSession();
   const searchParams = useSearchParams();
   const [redirecting, setRedirecting] = useState(false);
@@ -14,7 +14,6 @@ export function CheckoutGate({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (searchParams.get("welcome") === "true" && status === "authenticated") {
       setRefreshing(true);
-      // Force JWT refresh so needsCheckout gets recalculated from DB
       update().then(() => {
         setRefreshing(false);
       });
@@ -33,7 +32,6 @@ export function CheckoutGate({ children }: { children: React.ReactNode }) {
 
     setRedirecting(true);
 
-    // Redirect to Stripe checkout for trial with card required
     fetch("/api/stripe/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -64,4 +62,12 @@ export function CheckoutGate({ children }: { children: React.ReactNode }) {
   }
 
   return <>{children}</>;
+}
+
+export function CheckoutGate({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense>
+      <CheckoutGateInner>{children}</CheckoutGateInner>
+    </Suspense>
+  );
 }
