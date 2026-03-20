@@ -80,6 +80,41 @@ export async function POST(request: Request) {
         break;
       }
 
+      case "checkout.session.completed": {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const session = event.data.object as any;
+        const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id;
+        const subscriptionId = typeof session.subscription === "string" ? session.subscription : session.subscription?.id;
+
+        if (customerId && subscriptionId) {
+          // Fetch full subscription from Stripe to get all details
+          const stripeSub = await stripe.subscriptions.retrieve(subscriptionId);
+          let status: string;
+          switch (stripeSub.status) {
+            case "trialing": status = "trialing"; break;
+            case "active": status = "active"; break;
+            case "past_due": status = "past_due"; break;
+            default: status = stripeSub.status;
+          }
+
+          await db
+            .update(subscriptions)
+            .set({
+              stripeSubscriptionId: subscriptionId,
+              stripePriceId: stripeSub.items?.data?.[0]?.price?.id ?? null,
+              plan: "pro",
+              status,
+              currentPeriodStart: stripeSub.current_period_start ? new Date(stripeSub.current_period_start * 1000) : null,
+              currentPeriodEnd: stripeSub.current_period_end ? new Date(stripeSub.current_period_end * 1000) : null,
+              cancelAtPeriodEnd: stripeSub.cancel_at_period_end ?? false,
+              trialEndsAt: stripeSub.trial_end ? new Date(stripeSub.trial_end * 1000) : null,
+              updatedAt: new Date(),
+            })
+            .where(eq(subscriptions.stripeCustomerId, customerId));
+        }
+        break;
+      }
+
       case "customer.subscription.trial_will_end": {
         // Trial ending in 3 days — could send a reminder email here
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

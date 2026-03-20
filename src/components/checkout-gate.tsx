@@ -2,15 +2,31 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 export function CheckoutGate({ children }: { children: React.ReactNode }) {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+  const { data: session, status, update } = useSession();
+  const searchParams = useSearchParams();
   const [redirecting, setRedirecting] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // After Stripe checkout returns with ?welcome=true, refresh the session
+  useEffect(() => {
+    if (searchParams.get("welcome") === "true" && status === "authenticated") {
+      setRefreshing(true);
+      // Force JWT refresh so needsCheckout gets recalculated from DB
+      update().then(() => {
+        setRefreshing(false);
+      });
+    }
+  }, [searchParams, status, update]);
 
   useEffect(() => {
-    if (status !== "authenticated" || redirecting) return;
+    if (status !== "authenticated" || redirecting || refreshing) return;
+
+    // Skip if returning from checkout
+    if (searchParams.get("welcome") === "true") return;
+    if (searchParams.get("billing") === "success") return;
 
     const user = session?.user as { needsCheckout?: boolean } | undefined;
     if (!user?.needsCheckout) return;
@@ -28,14 +44,13 @@ export function CheckoutGate({ children }: { children: React.ReactNode }) {
         if (data.url) {
           window.location.href = data.url;
         } else {
-          // If checkout fails, let them in anyway
           setRedirecting(false);
         }
       })
       .catch(() => {
         setRedirecting(false);
       });
-  }, [session, status, redirecting]);
+  }, [session, status, redirecting, refreshing, searchParams]);
 
   if (redirecting) {
     return (
