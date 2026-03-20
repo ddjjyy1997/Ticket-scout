@@ -8,10 +8,24 @@ import {
   Wallet,
   ChevronRight,
   ArrowRight,
+  Globe,
+  MapPin,
+  Building2,
+  Music,
+  Calendar,
 } from "lucide-react";
 import { LandingHeader } from "./header";
 import { LandingFooter } from "./footer";
 import { PricingTable } from "./pricing-table";
+
+const COVERAGE_STATS = [
+  { icon: Globe, value: "2", label: "Countries", description: "Canada & United States" },
+  { icon: MapPin, value: "30+", label: "Cities", description: "Toronto, Vancouver, Montreal, NYC, LA & more" },
+  { icon: Building2, value: "105+", label: "Venues", description: "Major arenas, theatres & stadiums" },
+  { icon: Calendar, value: "1,000+", label: "Events", description: "Tracked and updated daily" },
+  { icon: Ticket, value: "3,000+", label: "Presales", description: "Codes, links & alerts" },
+  { icon: Music, value: "3", label: "Categories", description: "Music, Sports & Comedy" },
+];
 
 const FEATURES = [
   {
@@ -46,7 +60,7 @@ const FEATURES = [
     icon: Shield,
     title: "Event Discovery",
     description:
-      "1,000+ Toronto events tracked daily from Ticketmaster. Music, sports, and more — all in one place.",
+      "1,000+ events across Canada & the US tracked daily. Music, sports, comedy — 105+ major venues, all in one place.",
     color: "bg-cyan-50 text-cyan-600",
   },
   {
@@ -79,7 +93,7 @@ const STEPS = [
 const FAQ = [
   {
     q: "What events does TicketScout track?",
-    a: "We track all events at major Toronto venues including Scotiabank Arena, Rogers Centre, Massey Hall, History, Danforth Music Hall, and more. Both music and sports.",
+    a: "We track events at 105+ major venues across Canada and the US — from Scotiabank Arena and Rogers Centre to Madison Square Garden, Crypto.com Arena, and more. Music, sports, and comedy.",
   },
   {
     q: "How do presale codes work?",
@@ -111,7 +125,7 @@ export function LandingPage() {
           <div className="mx-auto max-w-3xl text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm text-primary">
               <Zap className="h-3.5 w-3.5" />
-              Tracking 1,000+ Toronto events daily
+              Tracking 1,000+ events across Canada & the US
             </div>
             <h1 className="text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
               Never Miss a{" "}
@@ -121,8 +135,8 @@ export function LandingPage() {
               Again
             </h1>
             <p className="mt-6 text-lg text-muted-foreground sm:text-xl">
-              TicketScout tracks every presale, onsale, and resale opportunity across Toronto.
-              Get codes, alerts, and buy/sell scores — all before anyone else.
+              TicketScout tracks every presale, onsale, and resale opportunity across 105+ major venues
+              in North America. Get codes, alerts, and buy/sell scores — all before anyone else.
             </p>
             <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <Link
@@ -212,20 +226,32 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Social proof / stats */}
-      <section className="border-y border-border/50 bg-primary/5 py-12">
-        <div className="mx-auto grid max-w-4xl grid-cols-2 gap-8 px-4 text-center sm:grid-cols-4 sm:px-6">
-          {[
-            { value: "1,000+", label: "Events Tracked" },
-            { value: "50+", label: "Toronto Venues" },
-            { value: "Daily", label: "Presale Scans" },
-            { value: "Free", label: "To Get Started" },
-          ].map((s) => (
-            <div key={s.label}>
-              <div className="text-2xl font-bold text-primary sm:text-3xl">{s.value}</div>
-              <div className="mt-1 text-sm text-muted-foreground">{s.label}</div>
-            </div>
-          ))}
+      {/* Coverage Stats */}
+      <section className="border-y border-border/50 bg-primary/5 py-16 sm:py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="mx-auto max-w-2xl text-center mb-12">
+            <h2 className="text-3xl font-bold sm:text-4xl">
+              Nationwide Coverage
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              From Toronto to LA — we track presales at every major venue across North America.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+            {COVERAGE_STATS.map((s) => (
+              <div
+                key={s.label}
+                className="rounded-xl border border-border bg-card p-4 text-center transition-shadow hover:shadow-md"
+              >
+                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                  <s.icon className="h-5 w-5 text-primary" />
+                </div>
+                <div className="mt-3 text-2xl font-bold text-primary">{s.value}</div>
+                <div className="text-sm font-medium">{s.label}</div>
+                <div className="mt-1 text-xs text-muted-foreground">{s.description}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -280,7 +306,7 @@ export function LandingPage() {
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
             Join TicketScout and get presale codes, alerts, and resale analysis for every
-            major event in Toronto.
+            major event across North America.
           </p>
           <Link
             href="/signup"
