@@ -7,6 +7,7 @@ import { upsertEventFromTM } from "@/db/queries/events";
 import { SCAN_CONFIG, SCAN_FILTER } from "@/lib/constants";
 import { checkWatchlistMatches } from "@/lib/notifications/watchlist-matcher";
 import { checkSavedViewMatches } from "@/lib/notifications/view-matcher";
+import { checkLocationMatches } from "@/lib/notifications/location-matcher";
 import { autoScoreEvent } from "@/lib/scoring/auto-score";
 
 export interface ScanResult {
@@ -170,6 +171,15 @@ export async function runEventScan(
         }
       } catch (err) {
         await logScan(scanRun.id, "error", `Saved view check failed: ${err instanceof Error ? err.message : "Unknown"}`);
+      }
+
+      try {
+        const locNotifCount = await checkLocationMatches(newEventIds);
+        if (locNotifCount > 0) {
+          await logScan(scanRun.id, "info", `Created ${locNotifCount} location notifications`);
+        }
+      } catch (err) {
+        await logScan(scanRun.id, "error", `Location check failed: ${err instanceof Error ? err.message : "Unknown"}`);
       }
     }
 
@@ -380,6 +390,13 @@ export async function runBatchedEventScan(
         const viewNotifCount = await checkSavedViewMatches(newEventIds);
         if (viewNotifCount > 0) {
           await logScan(scanRun.id, "info", `Created ${viewNotifCount} saved view notifications`);
+        }
+      } catch {}
+
+      try {
+        const locNotifCount = await checkLocationMatches(newEventIds);
+        if (locNotifCount > 0) {
+          await logScan(scanRun.id, "info", `Created ${locNotifCount} location notifications`);
         }
       } catch {}
     }

@@ -100,14 +100,11 @@ export function NotificationsClient({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Notifications</h1>
-          <p className="text-muted-foreground">
-            {unreadCount > 0
-              ? `${unreadCount} unread notification${unreadCount > 1 ? "s" : ""}`
-              : "All caught up"}
-          </p>
-        </div>
+        <p className="text-muted-foreground">
+          {unreadCount > 0
+            ? `${unreadCount} unread notification${unreadCount > 1 ? "s" : ""}`
+            : "All caught up"}
+        </p>
         {unreadCount > 0 && (
           <Button variant="outline" size="sm" onClick={markAllRead}>
             <CheckCheck className="mr-2 h-4 w-4" />

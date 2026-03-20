@@ -11,6 +11,7 @@ import {
 import type { SavedViewFilters } from "@/db/schema/saved-views";
 import { eq, inArray } from "drizzle-orm";
 import { sendNewEventEmail } from "@/lib/email/resend";
+import { sendPushToUser } from "@/lib/push";
 
 /**
  * Check newly created events against all saved views with notifications enabled.
@@ -78,6 +79,16 @@ export async function checkSavedViewMatches(
           channel: "in_app",
         })
         .onConflictDoNothing();
+
+      // Send push notification
+      try {
+        await sendPushToUser(view.userId, {
+          title: `New event: ${event.name}`,
+          body: `${event.name}${venuePart} matches your "${view.name}" view.${presaleInfo}`,
+          url: `/events/${event.slug}`,
+          tag: `view-${view.id}-${event.id}`,
+        });
+      } catch {}
 
       notificationCount++;
     }

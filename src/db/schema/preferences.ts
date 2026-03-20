@@ -18,6 +18,8 @@ export const userPreferences = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     emailNotifications: boolean("email_notifications").notNull().default(true),
+    pushNotifications: boolean("push_notifications").notNull().default(true),
+    notifyCity: text("notify_city"), // auto-notify about presales in this city
     notifyOnsale: boolean("notify_onsale").notNull().default(true),
     notifyPriceDrop: boolean("notify_price_drop").notNull().default(true),
     notifyNewEvents: boolean("notify_new_events").notNull().default(true),

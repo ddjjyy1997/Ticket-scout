@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { scanRuns } from "@/db/schema";
-import { gte, desc } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 
 export const maxDuration = 30;
 
@@ -20,44 +20,42 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Check if any scan ran today
+  // Check if a scan ran today
   const todayStart = new Date();
-  todayStart.setUTCHours(0, 0, 0, 0);
+  todayStart.setHours(0, 0, 0, 0);
 
-  const todayScans = await db
-    .select({ id: scanRuns.id, status: scanRuns.status, completedAt: scanRuns.completedAt })
+  const [lastRun] = await db
+    .select({ startedAt: scanRuns.startedAt, status: scanRuns.status })
     .from(scanRuns)
-    .where(gte(scanRuns.startedAt, todayStart))
     .orderBy(desc(scanRuns.startedAt))
-    .limit(5);
+    .limit(1);
 
-  const hasCompletedScan = todayScans.some(
-    (s) => s.status === "completed" || s.status === "partial"
-  );
+  const ranToday = lastRun && lastRun.startedAt >= todayStart;
 
-  if (hasCompletedScan) {
+  if (ranToday) {
     return NextResponse.json({
-      status: "ok",
       message: "Scan already ran today",
-      scans: todayScans.length,
+      lastRun: lastRun.startedAt,
+      status: lastRun.status,
     });
   }
 
-  // No completed scan today — trigger one
+  // No scan today — trigger batch 0
   try {
     await fetch(`${APP_URL}/api/cron/scan-events?batch=0`, {
       headers: { authorization: `Bearer ${process.env.CRON_SECRET}` },
     });
-
-    return NextResponse.json({
-      status: "triggered",
-      message: "No scan found today — triggered batch 0",
-      todayScans: todayScans.length,
-    });
-  } catch (err) {
-    return NextResponse.json({
-      status: "error",
-      message: `Failed to trigger scan: ${err instanceof Error ? err.message : "Unknown"}`,
-    });
+  } catch {
+    // Retry once
+    try {
+      await fetch(`${APP_URL}/api/cron/scan-events?batch=0`, {
+        headers: { authorization: `Bearer ${process.env.CRON_SECRET}` },
+      });
+    } catch {}
   }
+
+  return NextResponse.json({
+    message: "No scan found today — triggered recovery scan",
+    lastRun: lastRun?.startedAt ?? null,
+  });
 }

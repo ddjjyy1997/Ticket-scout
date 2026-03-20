@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Check, X } from "lucide-react";
 import { BillingActions } from "./billing-actions";
+import { PushToggle } from "@/components/push-toggle";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -90,6 +91,19 @@ export default async function SettingsPage() {
         </CardContent>
       </Card>
 
+      {/* Push Notifications */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Push Notifications</CardTitle>
+          <CardDescription>
+            Get instant browser notifications for new events, presale alerts, and watchlist matches.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <PushToggle />
+        </CardContent>
+      </Card>
+
       {/* Plan Comparison */}
       <Card>
         <CardHeader>
@@ -115,6 +129,15 @@ export default async function SettingsPage() {
               {PLANS.free.maxSavedViews}
             </div>
             <div className="text-center">Unlimited</div>
+
+            {/* Push Notifications */}
+            <div>Push Notifications</div>
+            <div className="flex justify-center">
+              <Check className="h-4 w-4 text-primary" />
+            </div>
+            <div className="flex justify-center">
+              <Check className="h-4 w-4 text-primary" />
+            </div>
 
             {/* Email Notifications */}
             <div>Email Notifications</div>

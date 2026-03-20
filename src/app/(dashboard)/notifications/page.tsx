@@ -4,6 +4,8 @@ import { notifications } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { NotificationsClient } from "./notifications-client";
+import { PushToggle } from "@/components/push-toggle";
+import { NotificationSettings } from "@/components/notification-settings";
 
 export default async function NotificationsPage() {
   const session = await auth();
@@ -26,5 +28,19 @@ export default async function NotificationsPage() {
     createdAt: n.createdAt.toISOString(),
   }));
 
-  return <NotificationsClient initialNotifications={serialized} />;
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Notifications</h1>
+          <p className="text-sm text-muted-foreground">
+            All your alerts for watchlist matches, new events, and presales.
+          </p>
+        </div>
+        <PushToggle />
+      </div>
+      <NotificationSettings />
+      <NotificationsClient initialNotifications={serialized} />
+    </div>
+  );
 }

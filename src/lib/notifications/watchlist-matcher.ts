@@ -7,6 +7,7 @@ import {
   events,
 } from "@/db/schema";
 import { eq, and, inArray } from "drizzle-orm";
+import { sendPushToUser } from "@/lib/push";
 
 /**
  * Check newly created events against all users' watchlists
@@ -54,17 +55,30 @@ export async function checkWatchlistMatches(newEventIds: number[]): Promise<numb
       const matchedArtist = event.artists?.find((ea) => ea.artistId === watcher.artistId);
       const artistName = matchedArtist?.artist?.name ?? "Unknown artist";
 
+      const artistTitle = `New event: ${artistName}`;
+      const artistMsg = `${event.name} — ${artistName} has a new event${event.venue ? ` at ${event.venue.name}` : ""}.`;
+
       await db
         .insert(notifications)
         .values({
           userId: watcher.userId,
           eventId: event.id,
           type: "watchlist_match",
-          title: `New event: ${artistName}`,
-          message: `${event.name} — ${artistName} has a new event${event.venue ? ` at ${event.venue.name}` : ""}.`,
+          title: artistTitle,
+          message: artistMsg,
           channel: "in_app",
         })
         .onConflictDoNothing();
+
+      // Send push notification
+      try {
+        await sendPushToUser(watcher.userId, {
+          title: artistTitle,
+          body: artistMsg,
+          url: `/events/${event.slug}`,
+          tag: `watchlist-${event.id}`,
+        });
+      } catch {}
 
       notificationCount++;
     }
@@ -80,17 +94,29 @@ export async function checkWatchlistMatches(newEventIds: number[]): Promise<numb
         const alreadyNotified = artistWatchers.some((aw) => aw.userId === watcher.userId);
         if (alreadyNotified) continue;
 
+        const venueTitle = `New event at ${event.venue?.name ?? "watched venue"}`;
+        const venueMsg = `${event.name} — A new event has been added at ${event.venue?.name ?? "a watched venue"}.`;
+
         await db
           .insert(notifications)
           .values({
             userId: watcher.userId,
             eventId: event.id,
             type: "watchlist_match",
-            title: `New event at ${event.venue?.name ?? "watched venue"}`,
-            message: `${event.name} — A new event has been added at ${event.venue?.name ?? "a watched venue"}.`,
+            title: venueTitle,
+            message: venueMsg,
             channel: "in_app",
           })
           .onConflictDoNothing();
+
+        try {
+          await sendPushToUser(watcher.userId, {
+            title: venueTitle,
+            body: venueMsg,
+            url: `/events/${event.slug}`,
+            tag: `watchlist-${event.id}`,
+          });
+        } catch {}
 
         notificationCount++;
       }

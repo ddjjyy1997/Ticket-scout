@@ -13,3 +13,4 @@ export * from "./saved-views";
 export * from "./subscriptions";
 export * from "./presale-codes";
 export * from "./user-tickets";
+export * from "./push-subscriptions";
