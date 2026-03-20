@@ -1,54 +1,62 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect, useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState, useRef } from "react";
 
-function CheckoutGateInner({ children }: { children: React.ReactNode }) {
-  const { data: session, status, update } = useSession();
-  const searchParams = useSearchParams();
+export function CheckoutGate({ children }: { children: React.ReactNode }) {
+  const { status } = useSession();
   const [redirecting, setRedirecting] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
+  const [checked, setChecked] = useState(false);
+  const checking = useRef(false);
 
-  // After Stripe checkout returns with ?welcome=true, refresh the session
   useEffect(() => {
-    if (searchParams.get("welcome") === "true" && status === "authenticated") {
-      setRefreshing(true);
-      update().then(() => {
-        setRefreshing(false);
-      });
+    if (status !== "authenticated" || checked || checking.current) return;
+
+    // Skip if returning from Stripe checkout
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("welcome") === "true" || params.get("billing") === "success") {
+        setChecked(true);
+        return;
+      }
     }
-  }, [searchParams, status, update]);
 
-  useEffect(() => {
-    if (status !== "authenticated" || redirecting || refreshing) return;
+    checking.current = true;
 
-    // Skip if returning from checkout
-    if (searchParams.get("welcome") === "true") return;
-    if (searchParams.get("billing") === "success") return;
-
-    const user = session?.user as { needsCheckout?: boolean } | undefined;
-    if (!user?.needsCheckout) return;
-
-    setRedirecting(true);
-
-    fetch("/api/stripe/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ trial: true }),
-    })
+    // Check DB directly via API — no stale JWT issues
+    fetch("/api/subscription/status")
       .then((res) => res.json())
       .then((data) => {
-        if (data.url) {
-          window.location.href = data.url;
+        if (data.needsCheckout) {
+          setRedirecting(true);
+          // Redirect to Stripe checkout
+          fetch("/api/stripe/checkout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ trial: true }),
+          })
+            .then((res) => res.json())
+            .then((checkoutData) => {
+              if (checkoutData.url) {
+                window.location.href = checkoutData.url;
+              } else {
+                // Checkout failed — let them in
+                setRedirecting(false);
+                setChecked(true);
+              }
+            })
+            .catch(() => {
+              setRedirecting(false);
+              setChecked(true);
+            });
         } else {
-          setRedirecting(false);
+          setChecked(true);
         }
       })
       .catch(() => {
-        setRedirecting(false);
+        setChecked(true);
       });
-  }, [session, status, redirecting, refreshing, searchParams]);
+  }, [status, checked]);
 
   if (redirecting) {
     return (
@@ -62,12 +70,4 @@ function CheckoutGateInner({ children }: { children: React.ReactNode }) {
   }
 
   return <>{children}</>;
-}
-
-export function CheckoutGate({ children }: { children: React.ReactNode }) {
-  return (
-    <Suspense>
-      <CheckoutGateInner>{children}</CheckoutGateInner>
-    </Suspense>
-  );
 }

@@ -117,12 +117,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const role = token.role as string;
         if (role === "admin") {
           token.plan = "pro";
-          token.needsCheckout = false;
         } else {
           try {
             const db = getDb();
             const [sub] = await db
-              .select({ status: subscriptions.status, stripeSubscriptionId: subscriptions.stripeSubscriptionId })
+              .select({ status: subscriptions.status })
               .from(subscriptions)
               .where(eq(subscriptions.userId, userId))
               .limit(1);
@@ -130,11 +129,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               sub && (sub.status === "trialing" || sub.status === "active")
                 ? "pro"
                 : "free";
-            // User needs checkout if trialing without a Stripe subscription (no card entered)
-            token.needsCheckout = !!(sub && sub.status === "trialing" && !sub.stripeSubscriptionId);
           } catch {
             token.plan = "free";
-            token.needsCheckout = false;
           }
         }
       }
@@ -145,7 +141,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.id = token.id as string;
         (session.user as { role?: string }).role = token.role as string;
         (session.user as { plan?: string }).plan = (token.plan as string) ?? "free";
-        (session.user as { needsCheckout?: boolean }).needsCheckout = !!token.needsCheckout;
       }
       return session;
     },
