@@ -1,16 +1,28 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import bcryptjs from "bcryptjs";
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { getDb } from "@/db";
-import { users, subscriptions } from "@/db/schema";
+import { users, accounts, sessions, verificationTokens, subscriptions } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: DrizzleAdapter(getDb(), {
+    usersTable: users,
+    accountsTable: accounts,
+    sessionsTable: sessions,
+    verificationTokensTable: verificationTokens,
+  }),
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
   },
   providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
     Credentials({
       name: "credentials",
       credentials: {
@@ -48,8 +60,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async jwt({ token, user, trigger }) {
       if (user) {
-        token.role = (user as { role?: string }).role ?? "user";
         token.id = user.id;
+        // For OAuth users, role isn't on the user object — fetch from DB
+        const role = (user as { role?: string }).role;
+        if (role) {
+          token.role = role;
+        } else {
+          try {
+            const db = getDb();
+            const [dbUser] = await db
+              .select({ role: users.role })
+              .from(users)
+              .where(eq(users.id, user.id!))
+              .limit(1);
+            token.role = dbUser?.role ?? "user";
+          } catch {
+            token.role = "user";
+          }
+        }
       }
       // Refresh plan on sign-in or update
       if (user || trigger === "update") {
