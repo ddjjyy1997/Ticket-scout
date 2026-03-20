@@ -216,7 +216,7 @@ export default async function EventDetailPage({
                 <ExternalLink className="h-3 w-3" />
               </a>
             )}
-            <ShareButton url={`/events/${event.slug}`} title={event.name} />
+            <ShareButton url={`/share/${event.slug}`} title={event.name} />
           </div>
         </div>
       </div>

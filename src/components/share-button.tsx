@@ -45,13 +45,24 @@ export function ShareButton({ url, title }: ShareButtonProps) {
     setOpen(false);
   }
 
+  async function shareNative() {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url: fullUrl });
+        setOpen(false);
+        return true;
+      } catch {}
+    }
+    return false;
+  }
+
   function shareText() {
-    window.location.href = `sms:?body=${encodeURIComponent(`Check out this event: ${fullUrl}`)}`;
+    window.location.href = `sms:?body=${encodeURIComponent(`Check out this presale: ${title}\n${fullUrl}`)}`;
     setOpen(false);
   }
 
   function shareEmail() {
-    window.location.href = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`Check out this event: ${fullUrl}`)}`;
+    window.location.href = `mailto:?subject=${encodeURIComponent(`Presale Alert: ${title}`)}&body=${encodeURIComponent(`Check out this presale on TicketScout:\n\n${title}\n${fullUrl}\n\nGet presale codes, alerts, and more at TicketScout.ca`)}`;
     setOpen(false);
   }
 

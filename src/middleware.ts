@@ -10,6 +10,7 @@ export default auth((req) => {
     pathname === "/pricing" ||
     pathname === "/features" ||
     pathname === "/contact" ||
+    pathname.startsWith("/share") ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/signup") ||
     pathname.startsWith("/api/auth") ||
