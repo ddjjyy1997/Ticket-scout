@@ -27,8 +27,8 @@ export async function GET(request: Request) {
   const todayScans = await db
     .select({ id: scanRuns.id, status: scanRuns.status, completedAt: scanRuns.completedAt })
     .from(scanRuns)
-    .where(gte(scanRuns.createdAt, todayStart))
-    .orderBy(desc(scanRuns.createdAt))
+    .where(gte(scanRuns.startedAt, todayStart))
+    .orderBy(desc(scanRuns.startedAt))
     .limit(5);
 
   const hasCompletedScan = todayScans.some(
