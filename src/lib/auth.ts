@@ -2,10 +2,12 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import bcryptjs from "bcryptjs";
+import Stripe from "stripe";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { getDb } from "@/db";
 import { users, accounts, sessions, verificationTokens, subscriptions } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { STRIPE_CONFIG } from "@/lib/plans";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(getDb(), {
@@ -57,6 +59,36 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
+  events: {
+    async createUser({ user }) {
+      // When a new user is created via OAuth, set up Stripe customer + subscription
+      if (!user.id || !user.email) return;
+      try {
+        let stripeCustomerId = `local_${user.id}`;
+        if (process.env.STRIPE_SECRET_KEY) {
+          const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+          const customer = await stripe.customers.create({
+            email: user.email,
+            name: user.name || undefined,
+            metadata: { userId: user.id },
+          });
+          stripeCustomerId = customer.id;
+        }
+        const db = getDb();
+        await db.insert(subscriptions).values({
+          userId: user.id,
+          stripeCustomerId,
+          plan: "pro",
+          status: "trialing",
+          trialEndsAt: new Date(
+            Date.now() + STRIPE_CONFIG.trialDays * 24 * 60 * 60 * 1000
+          ),
+        });
+      } catch (err) {
+        console.error("OAuth subscription setup error:", err);
+      }
+    },
+  },
   callbacks: {
     async jwt({ token, user, trigger }) {
       if (user) {
@@ -85,11 +117,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const role = token.role as string;
         if (role === "admin") {
           token.plan = "pro";
+          token.needsCheckout = false;
         } else {
           try {
             const db = getDb();
             const [sub] = await db
-              .select({ status: subscriptions.status })
+              .select({ status: subscriptions.status, stripeSubscriptionId: subscriptions.stripeSubscriptionId })
               .from(subscriptions)
               .where(eq(subscriptions.userId, userId))
               .limit(1);
@@ -97,8 +130,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               sub && (sub.status === "trialing" || sub.status === "active")
                 ? "pro"
                 : "free";
+            // User needs checkout if trialing without a Stripe subscription (no card entered)
+            token.needsCheckout = !!(sub && sub.status === "trialing" && !sub.stripeSubscriptionId);
           } catch {
             token.plan = "free";
+            token.needsCheckout = false;
           }
         }
       }
@@ -109,6 +145,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.id = token.id as string;
         (session.user as { role?: string }).role = token.role as string;
         (session.user as { plan?: string }).plan = (token.plan as string) ?? "free";
+        (session.user as { needsCheckout?: boolean }).needsCheckout = !!token.needsCheckout;
       }
       return session;
     },
