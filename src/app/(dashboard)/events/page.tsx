@@ -360,7 +360,7 @@ export default async function EventsPage({
       <div>
         <h1 className="text-2xl font-bold">Events</h1>
         <p className="text-muted-foreground">
-          {totalCount} upcoming events across Toronto venues
+          {totalCount} upcoming events across North America
         </p>
       </div>
 

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Check, X } from "lucide-react";
 
 const features = [
-  { name: "Track 1000+ Toronto Events", free: true, pro: true },
+  { name: "Track 1000+ Events Across North America", free: true, pro: true },
   { name: "Presale & Onsale Alerts", free: true, pro: true },
   { name: "Event Calendar View", free: true, pro: true },
   { name: "Artist & Venue Watchlist", free: true, pro: true },

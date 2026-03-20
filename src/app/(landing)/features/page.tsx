@@ -17,8 +17,8 @@ const features = [
     icon: Shield,
     title: "Event Discovery",
     description:
-      "TicketScout scans Ticketmaster daily for every event at 50+ Toronto venues. Music, sports, comedy — everything tracked automatically so you don't have to search manually.",
-    highlights: ["1,000+ events tracked", "50+ venues", "Music & Sports", "Daily automated scans"],
+      "TicketScout scans Ticketmaster daily for every event at 105+ venues across Canada and the US. Music, sports, comedy — everything tracked automatically so you don't have to search manually.",
+    highlights: ["1,000+ events tracked", "105+ venues", "Music, Sports & Comedy", "Daily automated scans"],
     color: "bg-cyan-50 text-cyan-600",
   },
   {
@@ -70,7 +70,7 @@ export default function FeaturesPage() {
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-3xl font-bold sm:text-4xl">Features</h1>
           <p className="mt-4 text-lg text-muted-foreground">
-            Every tool you need to find the best ticket deals in Toronto.
+            Every tool you need to find the best ticket deals across North America.
           </p>
         </div>
 

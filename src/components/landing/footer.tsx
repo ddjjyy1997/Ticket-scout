@@ -12,7 +12,7 @@ export function LandingFooter() {
               <span className="text-lg font-bold">TicketScout</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              Your scout for the best ticket deals in Toronto. Never miss a presale again.
+              Your scout for the best ticket deals across North America. Never miss a presale again.
             </p>
           </div>
 

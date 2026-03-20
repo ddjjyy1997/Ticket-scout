@@ -251,7 +251,7 @@ export default async function AdminPage() {
             <CardHeader>
               <CardTitle>Manual Scan</CardTitle>
               <CardDescription>
-                Trigger a Ticketmaster scan for all Toronto venues
+                Trigger a Ticketmaster scan for all venues
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">

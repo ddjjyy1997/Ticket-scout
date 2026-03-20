@@ -34,7 +34,7 @@ export default function ContactPage() {
             </div>
             <h3 className="mt-4 font-semibold">Based In</h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              Built for Toronto, by Toronto
+              Built in Toronto, for all of North America
             </p>
             <p className="mt-3 text-sm font-medium text-primary">
               Toronto, ON, Canada
