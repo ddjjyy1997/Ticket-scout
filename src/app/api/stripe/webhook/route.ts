@@ -88,7 +88,8 @@ export async function POST(request: Request) {
 
         if (customerId && subscriptionId) {
           // Fetch full subscription from Stripe to get all details
-          const stripeSub = await stripe.subscriptions.retrieve(subscriptionId);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const stripeSub = await stripe.subscriptions.retrieve(subscriptionId) as any;
           let status: string;
           switch (stripeSub.status) {
             case "trialing": status = "trialing"; break;
