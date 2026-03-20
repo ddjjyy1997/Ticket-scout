@@ -5,8 +5,8 @@
       "schedule": "0 8 * * *"
     },
     {
-      "path": "/api/cron/recalculate-scores",
-      "schedule": "0 9 * * *"
+      "path": "/api/cron/scan-watchdog",
+      "schedule": "0 12 * * *"
     }
   ]
 }
