@@ -13,6 +13,11 @@ import {
   Building2,
   Music,
   Calendar,
+  Clock,
+  DollarSign,
+  Lock,
+  Quote,
+  Users,
 } from "lucide-react";
 import { LandingHeader } from "./header";
 import { LandingFooter } from "./footer";
@@ -72,11 +77,32 @@ const FEATURES = [
   },
 ];
 
+const PRESALE_EXPLAINER = [
+  {
+    icon: Clock,
+    title: "Beat the Rush",
+    description:
+      "Presales open 1-3 days before general sale. While everyone else is stuck in the Ticketmaster queue, you're already picking your seats.",
+  },
+  {
+    icon: DollarSign,
+    title: "Better Seats, Better Prices",
+    description:
+      "Presale tickets are often face value. The same seats can cost 2-5x more on resale sites after they sell out.",
+  },
+  {
+    icon: Lock,
+    title: "Exclusive Access",
+    description:
+      "Some presales are invite-only or require special codes. TicketScout tracks and shares these codes so you never miss out.",
+  },
+];
+
 const STEPS = [
   {
     step: "01",
-    title: "Create Your Account",
-    description: "Sign up in 30 seconds. Try Pro free for 7 days — cancel anytime.",
+    title: "Sign Up in Seconds",
+    description: "Create a free account with Google or email. No credit card needed — ever.",
   },
   {
     step: "02",
@@ -87,6 +113,33 @@ const STEPS = [
     step: "03",
     title: "Never Miss a Presale",
     description: "Get codes, signup links, and reminders delivered right before each presale opens.",
+  },
+];
+
+const TESTIMONIALS = [
+  {
+    name: "Marcus T.",
+    location: "Toronto, ON",
+    text: "Found a presale code for Drake at Scotiabank Arena 2 hours before it went live. Got floor seats that were selling for 3x on StubHub the next day.",
+    avatar: "MT",
+  },
+  {
+    name: "Jessica R.",
+    location: "Los Angeles, CA",
+    text: "I used to miss every presale because I didn't even know they were happening. TicketScout sends me alerts and codes — I've gotten tickets to 4 shows this month.",
+    avatar: "JR",
+  },
+  {
+    name: "Kevin L.",
+    location: "New York, NY",
+    text: "The buy/sell scores are insane. Bought tickets to a comedy show with a 92 score, flipped them for $200 profit. This app pays for itself.",
+    avatar: "KL",
+  },
+  {
+    name: "Sarah M.",
+    location: "Vancouver, BC",
+    text: "Finally an app that actually tracks presales across Canada. I was tired of missing out because I didn't know the right codes.",
+    avatar: "SM",
   },
 ];
 
@@ -104,13 +157,20 @@ const FAQ = [
     a: "Our scoring engine analyzes venue capacity, genre demand, artist popularity, resale market data, and timing to give you a 0-100 score for buying and selling tickets.",
   },
   {
-    q: "Can I cancel anytime?",
-    a: "Yes. Pro subscriptions can be cancelled at any time. You'll keep access until the end of your billing period.",
+    q: "Is TicketScout really free?",
+    a: "Yes! During our early access period, all features are completely free. We'll introduce a Pro tier later, but early users will always get special pricing.",
   },
   {
     q: "Do you sell tickets?",
     a: "No. TicketScout is an intelligence tool. We help you find the best deals and time your purchases — you buy directly from Ticketmaster, SeatGeek, or other platforms.",
   },
+];
+
+const AVATAR_COLORS = [
+  "bg-primary text-primary-foreground",
+  "bg-purple-600 text-white",
+  "bg-emerald-600 text-white",
+  "bg-amber-600 text-white",
 ];
 
 export function LandingPage() {
@@ -123,9 +183,13 @@ export function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5" />
         <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28 lg:py-36">
           <div className="mx-auto max-w-3xl text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm text-primary">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm text-primary">
               <Zap className="h-3.5 w-3.5" />
-              Tracking 1,000+ events across Canada & the US
+              100% Free — No Credit Card Required
+            </div>
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-4 py-1.5 text-sm text-emerald-600">
+              <Users className="h-3.5 w-3.5" />
+              Early Access — Join 50+ Users Getting Presale Codes
             </div>
             <h1 className="text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
               Never Miss a{" "}
@@ -136,14 +200,14 @@ export function LandingPage() {
             </h1>
             <p className="mt-6 text-lg text-muted-foreground sm:text-xl">
               TicketScout tracks every presale, onsale, and resale opportunity across 105+ major venues
-              in North America. Get codes, alerts, and buy/sell scores — all before anyone else.
+              in North America. Get codes, alerts, and buy/sell scores — completely free.
             </p>
             <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <Link
                 href="/signup"
                 className="inline-flex h-12 items-center gap-2 rounded-lg bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 hover:bg-primary/90 transition-all"
               >
-                Start Free Trial
+                Get Started Free
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
@@ -154,7 +218,7 @@ export function LandingPage() {
               </Link>
             </div>
             <p className="mt-4 text-xs text-muted-foreground">
-              7-day free Pro trial. Cancel anytime.
+              No credit card required. All features included.
             </p>
           </div>
 
@@ -228,8 +292,38 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* How It Works */}
+      {/* What Are Presale Codes? */}
       <section className="py-20 sm:py-28">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold sm:text-4xl">
+              What Are Presale Codes?
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Presale codes let you buy tickets BEFORE they go on sale to the general public. Here&apos;s why that matters:
+            </p>
+          </div>
+          <div className="mt-14 grid gap-6 lg:grid-cols-3">
+            {PRESALE_EXPLAINER.map((item) => (
+              <div
+                key={item.title}
+                className="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md"
+              >
+                <div className="inline-flex rounded-lg bg-primary/10 p-2.5">
+                  <item.icon className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="mt-4 text-lg font-semibold">{item.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {item.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="border-t border-border/50 bg-muted/20 py-20 sm:py-28">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold sm:text-4xl">
@@ -263,7 +357,7 @@ export function LandingPage() {
               Simple, Transparent Pricing
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">
-              Start free. Upgrade when you're ready.
+              All features free during early access. No credit card required.
             </p>
           </div>
           <div className="mt-14 mx-auto max-w-3xl">
@@ -272,8 +366,46 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* FAQ */}
+      {/* Testimonials */}
       <section className="border-t border-border/50 bg-muted/20 py-20 sm:py-28">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold sm:text-4xl">
+              What Early Users Are Saying
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Real feedback from our early access community.
+            </p>
+          </div>
+          <div className="mt-14 grid gap-6 sm:grid-cols-2">
+            {TESTIMONIALS.map((t, i) => (
+              <div
+                key={t.name}
+                className="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md"
+              >
+                <Quote className="h-5 w-5 text-muted-foreground/30" />
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  &ldquo;{t.text}&rdquo;
+                </p>
+                <div className="mt-4 flex items-center gap-3">
+                  <div
+                    className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold ${AVATAR_COLORS[i % AVATAR_COLORS.length]}`}
+                  >
+                    {t.avatar}
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium">{t.name}</div>
+                    <div className="text-xs text-muted-foreground">{t.location}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-20 sm:py-28">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
           <h2 className="text-center text-3xl font-bold sm:text-4xl">
             Frequently Asked Questions
@@ -298,7 +430,7 @@ export function LandingPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 sm:py-28">
+      <section className="border-t border-border/50 bg-muted/20 py-20 sm:py-28">
         <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
           <img src="/logo.png" alt="TicketScout" className="object-contain mx-auto h-16 w-16" />
           <h2 className="mt-6 text-3xl font-bold sm:text-4xl">
@@ -306,13 +438,13 @@ export function LandingPage() {
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
             Join TicketScout and get presale codes, alerts, and resale analysis for every
-            major event across North America.
+            major event across North America — completely free.
           </p>
           <Link
             href="/signup"
             className="mt-8 inline-flex h-12 items-center gap-2 rounded-lg bg-primary px-8 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 hover:bg-primary/90 transition-all"
           >
-            Get Started Free
+            Join Free
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>

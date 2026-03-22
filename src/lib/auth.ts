@@ -78,11 +78,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         await db.insert(subscriptions).values({
           userId: user.id,
           stripeCustomerId,
-          plan: "pro",
-          status: "trialing",
-          trialEndsAt: new Date(
-            Date.now() + STRIPE_CONFIG.trialDays * 24 * 60 * 60 * 1000
-          ),
+          plan: "free",
+          status: "active",
         });
       } catch (err) {
         console.error("OAuth subscription setup error:", err);
